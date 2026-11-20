@@ -1,0 +1,37 @@
+{
+  "name": "samudra",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Samudra - Next.js web app with Node/Express API and Supabase (superadmin panel)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "setup:env": "node scripts/setup-env.mjs",
+    "predev": "npm run build -w @samudra/shared",
+    "dev": "concurrently -n shared,api,web -c gray,magenta,cyan \"npm:dev:shared\" \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:shared": "npm run dev -w @samudra/shared",
+    "dev:web": "npm run dev -w @samudra/web",
+    "dev:api": "npm run dev -w @samudra/api",
+    "build": "npm run build -w @samudra/shared && npm run build -w @samudra/api && npm run build -w @samudra/web",
+    "build:shared": "npm run build -w @samudra/shared",
+    "build:web": "npm run build -w @samudra/web",
+    "build:api": "npm run build -w @samudra/api",
+    "start:web": "npm run start -w @samudra/web",
+    "start:api": "npm run start -w @samudra/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "clean": "rimraf \"apps/*/.next\" \"apps/*/dist\" \"packages/*/dist\" \"**/*.tsbuildinfo\"",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --linked --schema public > packages/shared/src/database.types.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7",
+    "rimraf": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

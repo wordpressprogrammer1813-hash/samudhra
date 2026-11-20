@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* ===========================================================================
+   Samudhra design tokens, taken from the Figma file
+   (figma.com/design/d5Xv5xyeuizdoMYmg6XAmH).
+   Figma variable names are kept in comments so the two stay traceable.
+   =========================================================================== */
+@theme {
+  /* ---- brand palette ---------------------------------------------------- */
+  --color-creole: #1d0506;   /* color/red/7     - near-black maroon */
+  --color-heath: #4d0f10;    /* color/red/18    - deep maroon, primary */
+  --color-zest: #db851d;     /* color/orange/49 - amber, accent */
+  --color-korma: #9a5a0f;    /* color/orange/33 - dark amber */
+  --color-serenade: #fff8ed; /* color/grey/96   - warm cream, page bg */
+  --color-smoke: #f2f2f2;    /* color/grey/95 */
+
+  /* Tints used across the design, as flat values so Tailwind can emit them. */
+  --color-heath-14: #4d0f1024;
+  --color-heath-18: #4d0f102e;
+  --color-heath-20: #4d0f1033;
+  --color-heath-25: #4d0f1040;
+  --color-heath-35: #4d0f1059;
+  --color-heath-75: #4d0f10bf;
+  --color-heath-78: #4d0f10c7;
+  --color-creole-20: #1d050633;
+  --color-creole-55: #1d05068c;
+  --color-creole-82: #1d0506d1;
+  --color-zest-20: #db851d33;
+  --color-zest-80: #db851dcc;
+  --color-serenade-22: #fff8ed38;
+  --color-serenade-75: #fff8edbf;
+  --color-serenade-78: #fff8edc7;
+
+  /* ---- type ------------------------------------------------------------- */
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Figma "Semantic/*" text styles, as font-size / line-height / tracking. */
+  --text-display: 6.625rem;            /* 106 - Heading 1 */
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: 0.01em;
+
+  --text-h2: 4rem;                     /* 64 - Heading 2 */
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: -0.01em;
+
+  --text-h2-upper: 3.5rem;             /* 56 - Heading 3 upper */
+  --text-h2-upper--line-height: 0.92;
+  --text-h2-upper--letter-spacing: -0.02em;
+
+  --text-h3: 2.125rem;                 /* 34 - Heading 3 */
+  --text-h3--line-height: 1.1;
+
+  --text-body: 1.0625rem;              /* 17 - Montserrat/Regular */
+  --text-body--line-height: 1.5;
+
+  --text-link: 1rem;                   /* 16 - Semantic/Link */
+  --text-link--line-height: 1.3;
+
+  --text-small: 0.8125rem;             /* 13 - Montserrat/Medium */
+  --text-small--line-height: 1.4;
+  --text-small--letter-spacing: 0.06em;
+
+  --text-eyebrow: 0.6875rem;           /* 11 - Link / Button upper */
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.24em;
+
+  /* ---- spacing, radii, sizes -------------------------------------------- */
+  --spacing-xs: 0.5rem;     /* 8  */
+  --spacing-s: 1rem;        /* 16 - item spacing/s */
+  --spacing-sp: 1.5rem;     /* 24 - item spacing/s+ */
+  --spacing-m: 2rem;        /* 32 - item spacing/m */
+  --spacing-l: 3rem;        /* 48 - item spacing/l */
+  --spacing-xl: 4rem;       /* 64 - item spacing/xl */
+
+  --radius-sm: 0.875rem;    /* 14 */
+  --radius-card: 1.375rem;  /* 22 */
+  --radius-lg: 1.625rem;    /* 26 */
+  --radius-pill: 999px;
+
+  --container-content: 68.75rem; /* 1100 - text column */
+  --container-site: 82.5rem;     /* 1320 - page container */
+
+  --height-control: 2.75rem;     /* 44 - buttons / inputs */
+  --height-control-lg: 3.25rem;  /* 52 */
+}
+
+/* ---------------------------------------------------------------------------
+   Semantic surfaces. The design is a warm light theme; dark mode flips to
+   Creole on Serenade rather than inventing a second palette.
+   --------------------------------------------------------------------------- */
+:root {
+  --background: #fff8ed;          /* Serenade */
+  --foreground: #1d0506;          /* Creole */
+  --card: #ffffff;
+  --card-foreground: #1d0506;
+  --muted: #f2f2f2;               /* smoke */
+  --muted-foreground: #4d0f10bf;  /* Heath 75% */
+  --border: #4d0f1033;            /* Heath 20% */
+  --input: #4d0f1059;             /* Heath 35% */
+  --ring: #db851d;                /* Zest */
+  --primary: #4d0f10;             /* Heath */
+  --primary-foreground: #fff8ed;
+  --accent: #db851d;              /* Zest */
+  --accent-foreground: #1d0506;
+  --destructive: oklch(0.58 0.22 25);
+  --success: oklch(0.52 0.13 150);
+  --warning: #9a5a0f;             /* Korma */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #1d0506;
+    --foreground: #fff8ed;
+    --card: #2a0a0b;
+    --card-foreground: #fff8ed;
+    --muted: #3a0d0e;
+    --muted-foreground: #fff8edbf;
+    --border: #fff8ed38;
+    --input: #fff8ed38;
+    --ring: #db851d;
+    --primary: #db851d;
+    --primary-foreground: #1d0506;
+    --accent: #db851d;
+    --accent-foreground: #1d0506;
+    --warning: #db851d;
+  }
+}
+
+:root[data-theme="dark"] {
+  --background: #1d0506;
+  --foreground: #fff8ed;
+  --card: #2a0a0b;
+  --card-foreground: #fff8ed;
+  --muted: #3a0d0e;
+  --muted-foreground: #fff8edbf;
+  --border: #fff8ed38;
+  --input: #fff8ed38;
+  --ring: #db851d;
+  --primary: #db851d;
+  --primary-foreground: #1d0506;
+  --accent: #db851d;
+  --accent-foreground: #1d0506;
+  --warning: #db851d;
+}
+
+/* Expose the semantic tokens as utilities: bg-background, text-primary, ... */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* The uppercase, wide-tracked label used on buttons and small links. */
+  .u-eyebrow {
+    font-size: var(--text-eyebrow);
+    line-height: var(--text-eyebrow--line-height);
+    letter-spacing: var(--text-eyebrow--letter-spacing);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
