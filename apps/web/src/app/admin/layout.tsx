@@ -7,19 +7,20 @@ import { Topbar } from '@/components/admin/topbar';
 export const metadata: Metadata = { title: { default: 'Admin', template: '%s | Samudhra admin' } };
 
 /**
- * Server-side gate for the whole panel. The middleware already redirects
- * anonymous users; this check is the one that actually matters.
+ * Server-side gate for the whole panel. The proxy already redirects anonymous
+ * visitors; this check is the one that actually matters, and it is super admin
+ * only - the panel exists for the one person who edits the site.
  */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-  const { profile } = await requireRole('editor');
+  const { profile } = await requireRole('superadmin');
 
   return (
     <div className="flex min-h-dvh">
-      <Sidebar role={profile.role} />
+      <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar profile={profile} />
-        <MobileNav role={profile.role} />
+        <MobileNav />
         <main className="flex-1 bg-background p-4 sm:p-6">{children}</main>
       </div>
     </div>

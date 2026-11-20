@@ -13,7 +13,7 @@ Reviewed 2026-11-21. Everything lives on one page (`0:1 — Page 1`).
 | Node | Frame | Size | What it is |
 | --- | --- | --- | --- |
 | `1:8894` | Option 6 | 1440×1112 | **Location splash** — wordmark, two city cards (New Jersey / New York), each with *Reserve a Table* and *Order Online* |
-| `2:117` | home | 1920×7291 | **Home** — hero "Tradition Reinterpreted", menu teasers (Curries / Signature Plates / Biryani), Weekend Thali, Dining & Lounge, Our Story, Catering & Events, Gallery |
+| `2:117` | home | 1920×7291 | **Home** — hero "Tradition Reinterpreted", menu teasers (Curries / Signature Plates / Biryani), Weekend Thali, Dining & Lounge, Our Story, Catering & Events, Gallery. **Built** — its seven sections are `hero`, `menuShowcase`, `weekendThali`, `diningLounge`, `ourStory`, `cateringEvents`, `contactCta` |
 | `2:6280` | Frame | 1920×6561 | **Menu** — Signature Plates, Curries, Biryani & Rice, Weekend Thali, Bar & Cocktails; each dish has name, description, price |
 | `2:6686` | Frame | 1920×4544 | **About** — story, stats, team (Head Chef, Tandoor Chef, Pastry Chef, Bar Manager), FAQ / help centre |
 | `2:8073` | Frame | 1920×7100 | **Dining & Lounge** — The Dining Room, The Lounge, Private Dining, newsletter signup, contact + hours |

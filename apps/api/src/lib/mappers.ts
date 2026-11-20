@@ -1,4 +1,4 @@
-import { isRole, type AuditLog, type Profile, type Setting } from '@samudra/shared';
+import { isRole, type Profile, type Setting } from '@samudra/shared';
 
 type Row = Record<string, unknown>;
 
@@ -15,20 +15,6 @@ export function toProfile(row: Row): Profile {
     lastSeenAt: (row.last_seen_at as string | null) ?? null,
     createdAt: String(row.created_at),
     updatedAt: String(row.updated_at),
-  };
-}
-
-export function toAuditLog(row: Row): AuditLog {
-  return {
-    id: String(row.id),
-    actorId: (row.actor_id as string | null) ?? null,
-    actorEmail: (row.actor_email as string | null) ?? null,
-    action: String(row.action),
-    entity: (row.entity as string | null) ?? null,
-    entityId: (row.entity_id as string | null) ?? null,
-    meta: (row.meta as Record<string, unknown> | null) ?? null,
-    ip: (row.ip as string | null) ?? null,
-    createdAt: String(row.created_at),
   };
 }
 

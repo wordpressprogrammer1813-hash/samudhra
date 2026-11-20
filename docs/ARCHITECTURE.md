@@ -39,6 +39,26 @@ and never calls the API directly.
 4. Server pages call `requireRole()`, which re-reads the profile (and therefore
    the role) from Postgres — not from the JWT, so a demotion takes effect at once.
 
+## The content model
+
+The admin panel is a small CMS, and its whole shape comes from one file:
+`packages/shared/src/content.ts`. `SECTION_DEFS` declares, per section kind,
+the fields it has and their types. From that:
+
+- `SectionEditor` renders the form (including repeaters for cards and buttons),
+- `sectionContentSchema(kind)` builds the zod schema the API saves against,
+- the matching component in `components/site/sections.tsx` reads the fields.
+
+So a new field is one entry in that array — no migration, because the content
+is a `jsonb` column, and no API change, because validation is derived.
+
+`pages` + `page_sections` hold the data. The header and footer are sections on
+a `global` page, which keeps a single editing model for the whole site rather
+than a second "site settings" concept for navigation.
+
+Unknown keys are stripped on save instead of rejected, so removing a field from
+a def can never lock the owner out of saving a section.
+
 ## Role enforcement, three layers
 
 | Layer | File | Fails how |
@@ -77,6 +97,8 @@ It compiles to `dist/` and both apps consume the build. `npm run dev` runs
 | Object | Purpose |
 | --- | --- |
 | `app_role`, `user_status` | Enums; `app_role` mirrors `ROLES` in the shared package |
+| `pages` | One row per editable page; `global` holds the header and footer |
+| `page_sections` | Ordered content blocks; `kind` picks the renderer, `content` is jsonb |
 | `profiles` | One row per `auth.users`, carries the role |
 | `handle_new_user()` trigger | Creates the profile on sign-up |
 | `current_app_role()`, `has_min_role()`, `is_admin()`, `is_superadmin()` | Policy helpers |

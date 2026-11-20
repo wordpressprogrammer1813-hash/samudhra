@@ -1,43 +1,34 @@
-import { FileClock, LayoutDashboard, Settings, Users, Waves } from 'lucide-react';
-import type { Role } from '@samudra/shared';
+import { FileText, Settings, UserCog, Waves } from 'lucide-react';
 
 export interface NavItem {
   href: string;
   label: string;
-  icon: typeof LayoutDashboard;
-  /** Lowest role allowed to see this item. */
-  minRole: Role;
+  icon: typeof FileText;
   description?: string;
 }
 
+/**
+ * The whole panel. It exists for one person — the client editing their own
+ * site — so there is no user management and no role switching here.
+ */
 export const adminNav: NavItem[] = [
   {
     href: '/admin',
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-    minRole: 'editor',
-    description: 'Overview of the site',
-  },
-  {
-    href: '/admin/users',
-    label: 'Users',
-    icon: Users,
-    minRole: 'admin',
-    description: 'Accounts, roles and access',
-  },
-  {
-    href: '/admin/audit',
-    label: 'Audit log',
-    icon: FileClock,
-    minRole: 'admin',
-    description: 'Who changed what, and when',
+    label: 'Pages',
+    icon: FileText,
+    description: 'Edit the content of each page',
   },
   {
     href: '/admin/settings',
-    label: 'Settings',
+    label: 'Site settings',
     icon: Settings,
-    minRole: 'superadmin',
-    description: 'Site-wide configuration',
+    description: 'Name, contact details, maintenance mode',
+  },
+  {
+    href: '/admin/account',
+    label: 'Account',
+    icon: UserCog,
+    description: 'Your own details',
   },
 ];
 

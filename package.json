@@ -25,10 +25,13 @@
     "clean": "rimraf \"apps/*/.next\" \"apps/*/dist\" \"packages/*/dist\" \"**/*.tsbuildinfo\"",
     "db:push": "supabase db push",
     "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --linked --schema public > packages/shared/src/database.types.ts"
+    "db:types": "supabase gen types typescript --linked --schema public > packages/shared/src/database.types.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "concurrently": "^10.0.7",
+    "prettier": "3.6.2",
     "rimraf": "^6.0.1"
   },
   "engines": {

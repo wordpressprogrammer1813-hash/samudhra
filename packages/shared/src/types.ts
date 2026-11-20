@@ -35,9 +35,7 @@ export interface Setting<T = unknown> {
 }
 
 /** Shape every API route returns, so the client can branch on one field. */
-export type ApiResponse<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: ApiError };
+export type ApiResponse<T> = { ok: true; data: T } | { ok: false; error: ApiError };
 
 export interface ApiError {
   code: string;

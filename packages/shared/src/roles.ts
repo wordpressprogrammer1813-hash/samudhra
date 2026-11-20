@@ -34,21 +34,18 @@ export function hasMinRole(role: Role | null | undefined, minimum: Role): boolea
   return ROLE_RANK[role] >= ROLE_RANK[minimum];
 }
 
-/** Anyone who may open the admin panel at all. */
+/**
+ * Who may open the admin panel.
+ *
+ * The panel exists for one person - the client, who edits page content - so
+ * this is super admin only. `editor` and `admin` stay in the enum (and in the
+ * Postgres type) for when staff accounts are added later, but nothing grants
+ * them panel access today.
+ */
 export function canAccessAdmin(role: Role | null | undefined): boolean {
-  return hasMinRole(role, 'editor');
+  return role === 'superadmin';
 }
 
 export function isSuperAdmin(role: Role | null | undefined): boolean {
   return role === 'superadmin';
-}
-
-/**
- * Which roles a given actor is allowed to assign. Nobody can grant a role
- * at or above their own rank, except a superadmin (who can grant anything).
- */
-export function assignableRoles(actor: Role | null | undefined): Role[] {
-  if (!actor) return [];
-  if (actor === 'superadmin') return [...ROLES];
-  return ROLES.filter((r) => ROLE_RANK[r] < ROLE_RANK[actor]);
 }
