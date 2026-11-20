@@ -56,15 +56,23 @@ export async function getPage(slug: string): Promise<PageWithSections | null> {
   };
 }
 
-/** The header and footer, which live on the special "global" page. */
+/**
+ * Everything on the special "global" page: the header and footer, plus the
+ * text of the two dialogs, which appear on every page.
+ */
 export async function getChrome(): Promise<{
   header: PageSection | null;
   footer: PageSection | null;
+  booking: PageSection | null;
+  enquiry: PageSection | null;
 }> {
   const page = await getPage('global');
+  const of = (kind: PageSection['kind']) => page?.sections.find((s) => s.kind === kind) ?? null;
   return {
-    header: page?.sections.find((s) => s.kind === 'header') ?? null,
-    footer: page?.sections.find((s) => s.kind === 'footer') ?? null,
+    header: of('header'),
+    footer: of('footer'),
+    booking: of('bookingDialog'),
+    enquiry: of('enquiryForm'),
   };
 }
 

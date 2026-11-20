@@ -41,7 +41,7 @@ are editable from the same place as everything else.
 
 | Page | Slug | State |
 | --- | --- | --- |
-| Header & footer | `global` | Built |
+| Header & footer | `global` | Built — also holds the wording of both dialogs |
 | Home | `home` | Built — 7 sections |
 | Menu | `menu` | Page exists, sections not built yet |
 | Dining & Lounge | `dining` | Page exists, sections not built yet |

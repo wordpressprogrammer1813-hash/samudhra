@@ -14,24 +14,25 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * Sections stay server components: they render plain buttons carrying
  * `data-act` / `data-enq`, and this component attaches the listeners once,
  * the same way the original page did.
+ *
+ * Every word in the two dialogs comes from the admin panel, so the owner can
+ * reword or translate them without touching code.
  */
 
 type Intent = 'reserve' | 'order';
+type Text = Record<string, string>;
 
-const COPY: Record<Intent, { title: string; prompt: string; lead: string; note: string }> = {
-  reserve: {
-    title: 'Reserve a Table',
-    prompt: 'Where would you like to dine?',
-    lead: 'On the live site this opens the reservation system for ',
-    note: 'The booking link hasn’t been supplied, so no table has been reserved.',
-  },
-  order: {
-    title: 'Order Online',
-    prompt: 'Order from which location?',
-    lead: 'On the live site this opens online ordering for ',
-    note: 'The ordering link hasn’t been supplied, so no order has been placed.',
-  },
-};
+export interface SiteBehaviourProps {
+  locations: string[];
+  booking: Text;
+  enquiry: Text;
+}
+
+/** Falls back to the approved wording if a field was cleared in the panel. */
+function pick(text: Text, key: string, fallback: string): string {
+  const value = text[key];
+  return typeof value === 'string' && value.trim() ? value : fallback;
+}
 
 const CloseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
@@ -45,7 +46,7 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export function SiteBehaviour({ locations }: { locations: string[] }) {
+export function SiteBehaviour({ locations, booking, enquiry }: SiteBehaviourProps) {
   const [intent, setIntent] = useState<Intent>('reserve');
   const [location, setLocation] = useState<string | null>(null);
   const [actOpen, setActOpen] = useState(false);
@@ -81,8 +82,8 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
       const target = event.target as HTMLElement | null;
       const act = target?.closest<HTMLElement>('[data-act]');
       const enq = target?.closest<HTMLElement>('[data-enq]');
-      const mclose = target?.closest<HTMLElement>('[data-mclose]');
       const open = target?.closest<HTMLElement>('#openMenu');
+      const mclose = target?.closest<HTMLElement>('[data-mclose]');
 
       if (act) {
         event.preventDefault();
@@ -111,10 +112,7 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
     };
 
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeAll();
-        setMenu(false);
-      }
+      if (event.key === 'Escape') closeAll();
     };
 
     document.addEventListener('click', onClick);
@@ -148,7 +146,13 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
       const paused = !site?.classList.contains('paused');
       site?.classList.toggle('paused', paused);
       pause?.setAttribute('aria-pressed', paused ? 'true' : 'false');
-      pause?.setAttribute('aria-label', paused ? 'Play animations' : 'Pause animations');
+      // Both labels are editable on the hero section.
+      pause?.setAttribute(
+        'aria-label',
+        paused
+          ? (pause.dataset.playLabel ?? 'Play animations')
+          : (pause.dataset.pauseLabel ?? 'Pause animations'),
+      );
       const icon = document.getElementById('pi');
       if (icon) icon.innerHTML = paused ? PLAY : PAUSE;
     };
@@ -161,7 +165,20 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
     };
   }, []);
 
-  const copy = COPY[intent];
+  const isReserve = intent === 'reserve';
+  const title = pick(
+    booking,
+    isReserve ? 'reserveTitle' : 'orderTitle',
+    isReserve ? 'Reserve a Table' : 'Order Online',
+  );
+  const prompt = pick(
+    booking,
+    isReserve ? 'reservePrompt' : 'orderPrompt',
+    isReserve ? 'Where would you like to dine?' : 'Order from which location?',
+  );
+  const lead = pick(booking, isReserve ? 'reserveLead' : 'orderLead', '');
+  const note = pick(booking, isReserve ? 'reserveNote' : 'orderNote', '');
+  const closeLabel = pick(booking, 'closeLabel', 'Close');
   const picked = location !== null;
 
   return (
@@ -172,19 +189,19 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
           type="button"
           className="md-s"
           tabIndex={-1}
-          aria-label="Close"
+          aria-label={closeLabel}
           onClick={closeAll}
         />
         <div className="md-b" role="dialog" aria-modal="true" aria-labelledby="act-t">
-          <button type="button" className="md-x" aria-label="Close" onClick={closeAll}>
+          <button type="button" className="md-x" aria-label={closeLabel} onClick={closeAll}>
             <CloseIcon />
           </button>
 
           <p className="cap" id="act-k">
-            {location ?? 'Choose a location'}
+            {location ?? pick(booking, 'choosePrompt', 'Choose a location')}
           </p>
           <h2 className="md-t" id="act-t">
-            {picked ? copy.title : copy.prompt}
+            {picked ? title : prompt}
           </h2>
 
           {!picked ? (
@@ -199,16 +216,15 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
           ) : (
             <div id="act-done">
               <p className="md-p" id="act-b">
-                {copy.lead}
-                {location}.
+                {lead} {location}.
               </p>
               <p className="proto">
-                <span className="proto-k">Prototype</span>
-                <span id="act-p">{copy.note}</span>
+                <span className="proto-k">{pick(booking, 'noticeTag', 'Prototype')}</span>
+                <span id="act-p">{note}</span>
               </p>
               <div className="md-a">
                 <button type="button" className="btn b-fill b-sm" onClick={closeAll}>
-                  Close
+                  {closeLabel}
                 </button>
                 <button
                   type="button"
@@ -216,7 +232,7 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
                   id="act-sw"
                   onClick={() => setLocation(null)}
                 >
-                  Switch Location
+                  {pick(booking, 'switchLabel', 'Switch Location')}
                 </button>
               </div>
             </div>
@@ -230,17 +246,22 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
           type="button"
           className="md-s"
           tabIndex={-1}
-          aria-label="Close"
+          aria-label={pick(enquiry, 'closeLabel', 'Close')}
           onClick={closeAll}
         />
         <div className="md-b md-w" role="dialog" aria-modal="true" aria-labelledby="eq-t">
-          <button type="button" className="md-x" aria-label="Close" onClick={closeAll}>
+          <button
+            type="button"
+            className="md-x"
+            aria-label={pick(enquiry, 'closeLabel', 'Close')}
+            onClick={closeAll}
+          >
             <CloseIcon />
           </button>
 
-          <p className="cap">Catering &amp; Events</p>
+          <p className="cap">{pick(enquiry, 'eyebrow', 'Catering & Events')}</p>
           <h2 className="md-t" id="eq-t">
-            Event Inquiry
+            {pick(enquiry, 'title', 'Event Inquiry')}
           </h2>
 
           <form
@@ -254,7 +275,7 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
             }}
           >
             <fieldset className="fd fd-f">
-              <legend className="fl">Location</legend>
+              <legend className="fl">{pick(enquiry, 'locationLabel', 'Location')}</legend>
               <div className="rdr">
                 {locations.map((name) => (
                   <label key={name} className={`rd${enqLocation === name ? ' rd-on' : ''}`}>
@@ -277,43 +298,41 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
 
             <div className="fd">
               <label className="fl" htmlFor="eq-n">
-                Name
+                {pick(enquiry, 'nameLabel', 'Name')}
               </label>
               <input className="fi" id="eq-n" type="text" autoComplete="name" />
             </div>
             <div className="fd">
               <label className="fl" htmlFor="eq-e">
-                Email
+                {pick(enquiry, 'emailLabel', 'Email')}
               </label>
               <input className="fi" id="eq-e" type="email" autoComplete="email" />
             </div>
             <div className="fd">
               <label className="fl" htmlFor="eq-d">
-                Date
+                {pick(enquiry, 'dateLabel', 'Date')}
               </label>
               <input className="fi" id="eq-d" type="date" />
             </div>
             <div className="fd">
               <label className="fl" htmlFor="eq-g">
-                Guests
+                {pick(enquiry, 'guestsLabel', 'Guests')}
               </label>
               <input className="fi" id="eq-g" type="number" min={1} inputMode="numeric" />
             </div>
             <div className="fd fd-f">
               <label className="fl" htmlFor="eq-m">
-                Your occasion
+                {pick(enquiry, 'occasionLabel', 'Your occasion')}
               </label>
               <textarea className="fi" id="eq-m" />
             </div>
 
             <p className="f-err" id="eqErr" hidden={!enqError} role="alert">
-              Choose a location for your inquiry.
+              {pick(enquiry, 'errorText', 'Choose a location for your inquiry.')}
             </p>
             <div className="f-note" id="eqNote" hidden={!enqSent} role="status">
-              <span className="f-k">Prototype — not sent</span>
-              <p className="md-p">
-                This form isn’t connected to an events inbox yet, so nothing has been sent.
-              </p>
+              <span className="f-k">{pick(enquiry, 'sentTag', 'Prototype — not sent')}</span>
+              <p className="md-p">{pick(enquiry, 'sentText', '')}</p>
             </div>
 
             <div
@@ -321,10 +340,10 @@ export function SiteBehaviour({ locations }: { locations: string[] }) {
               style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}
             >
               <button type="submit" className="btn b-fill">
-                Send Inquiry
+                {pick(enquiry, 'submitLabel', 'Send Inquiry')}
               </button>
               <span style={{ fontSize: 12, color: 'rgba(77,15,16,.78)' }}>
-                Prototype form — not sent.
+                {pick(enquiry, 'footnote', '')}
               </span>
             </div>
           </form>

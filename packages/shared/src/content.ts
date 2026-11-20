@@ -58,6 +58,8 @@ export const SECTION_KINDS = [
   'ourStory',
   'cateringEvents',
   'contactCta',
+  'bookingDialog',
+  'enquiryForm',
 ] as const;
 
 export type SectionKind = (typeof SECTION_KINDS)[number];
@@ -114,6 +116,19 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
     fields: [
       { name: 'menuLabel', label: 'Menu button text', type: 'text', placeholder: 'Menu' },
       { name: 'logo', label: 'Wordmark image', type: 'image', placeholder: '/images/samudhra.png' },
+      {
+        name: 'openMenuLabel',
+        label: 'Menu button, spoken label',
+        type: 'text',
+        help: 'Read out by screen readers. Not shown on screen.',
+        placeholder: 'Open site menu',
+      },
+      {
+        name: 'closeMenuLabel',
+        label: 'Close button text',
+        type: 'text',
+        placeholder: 'Close menu',
+      },
       {
         name: 'actions',
         label: 'Header buttons',
@@ -224,6 +239,25 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
         itemLabel: 'button',
         max: 4,
         fields: buttonFields,
+      },
+      {
+        name: 'scrollLabel',
+        label: 'Scroll arrow, spoken label',
+        type: 'text',
+        help: 'Read out by screen readers. Not shown on screen.',
+        placeholder: 'Scroll down',
+      },
+      {
+        name: 'pauseLabel',
+        label: 'Pause button, spoken label',
+        type: 'text',
+        placeholder: 'Pause animations',
+      },
+      {
+        name: 'playLabel',
+        label: 'Play button, spoken label',
+        type: 'text',
+        placeholder: 'Play animations',
       },
     ],
   },
@@ -415,6 +449,99 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
           { name: 'linkLabel', label: 'Link text', type: 'text', placeholder: 'Reserve here' },
         ],
       },
+    ],
+  },
+
+  bookingDialog: {
+    kind: 'bookingDialog',
+    label: 'Reserve & order dialog',
+    description:
+      'The box that opens from every "Reserve a table" and "Order online" button. The locations in it come from the Contact section.',
+    fields: [
+      {
+        name: 'choosePrompt',
+        label: 'Label before a location is picked',
+        type: 'text',
+        placeholder: 'Choose a location',
+      },
+      { name: 'closeLabel', label: 'Close button', type: 'text', placeholder: 'Close' },
+      { name: 'switchLabel', label: 'Switch button', type: 'text', placeholder: 'Switch Location' },
+      { name: 'noticeTag', label: 'Notice tag', type: 'text', placeholder: 'Prototype' },
+
+      {
+        name: 'reserveTitle',
+        label: 'Reserve: heading',
+        type: 'text',
+        placeholder: 'Reserve a Table',
+      },
+      {
+        name: 'reservePrompt',
+        label: 'Reserve: question',
+        type: 'text',
+        placeholder: 'Where would you like to dine?',
+      },
+      {
+        name: 'reserveLead',
+        label: 'Reserve: sentence before the location name',
+        type: 'textarea',
+        rows: 2,
+        help: 'The chosen location is added to the end of this sentence.',
+      },
+      { name: 'reserveNote', label: 'Reserve: notice', type: 'textarea', rows: 2 },
+
+      { name: 'orderTitle', label: 'Order: heading', type: 'text', placeholder: 'Order Online' },
+      {
+        name: 'orderPrompt',
+        label: 'Order: question',
+        type: 'text',
+        placeholder: 'Order from which location?',
+      },
+      {
+        name: 'orderLead',
+        label: 'Order: sentence before the location name',
+        type: 'textarea',
+        rows: 2,
+      },
+      { name: 'orderNote', label: 'Order: notice', type: 'textarea', rows: 2 },
+    ],
+  },
+
+  enquiryForm: {
+    kind: 'enquiryForm',
+    label: 'Event enquiry form',
+    description: 'The form that opens from the "Start an inquiry" card.',
+    fields: [
+      { name: 'eyebrow', label: 'Eyebrow', type: 'text', placeholder: 'Catering & Events' },
+      { name: 'title', label: 'Heading', type: 'text', placeholder: 'Event Inquiry' },
+      {
+        name: 'closeLabel',
+        label: 'Close button, spoken label',
+        type: 'text',
+        placeholder: 'Close',
+      },
+
+      { name: 'locationLabel', label: 'Field: location', type: 'text', placeholder: 'Location' },
+      { name: 'nameLabel', label: 'Field: name', type: 'text', placeholder: 'Name' },
+      { name: 'emailLabel', label: 'Field: email', type: 'text', placeholder: 'Email' },
+      { name: 'dateLabel', label: 'Field: date', type: 'text', placeholder: 'Date' },
+      { name: 'guestsLabel', label: 'Field: guests', type: 'text', placeholder: 'Guests' },
+      {
+        name: 'occasionLabel',
+        label: 'Field: message',
+        type: 'text',
+        placeholder: 'Your occasion',
+      },
+
+      { name: 'submitLabel', label: 'Submit button', type: 'text', placeholder: 'Send Inquiry' },
+      { name: 'footnote', label: 'Note beside the button', type: 'text' },
+      {
+        name: 'errorText',
+        label: 'Message when no location is chosen',
+        type: 'text',
+        placeholder: 'Choose a location for your inquiry.',
+      },
+      { name: 'sentTag', label: 'After sending: tag', type: 'text' },
+      { name: 'sentText', label: 'After sending: message', type: 'textarea', rows: 2 },
     ],
   },
 };

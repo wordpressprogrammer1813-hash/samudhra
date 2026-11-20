@@ -101,7 +101,7 @@ export function Hero({ content }: { content: Record<string, unknown> }) {
         </div>
       </div>
 
-      <a className="chev" href="#menu" aria-label="Scroll down">
+      <a className="chev" href="#menu" aria-label={text(content, 'scrollLabel', 'Scroll down')}>
         <svg
           viewBox="0 0 34 18"
           fill="none"
@@ -113,11 +113,15 @@ export function Hero({ content }: { content: Record<string, unknown> }) {
         </svg>
       </a>
 
+      {/* The two labels travel as data attributes so the click handler can
+          swap them without re-reading content. */}
       <button
         type="button"
         className="pause"
         aria-pressed="false"
-        aria-label="Pause animations"
+        aria-label={text(content, 'pauseLabel', 'Pause animations')}
+        data-pause-label={text(content, 'pauseLabel', 'Pause animations')}
+        data-play-label={text(content, 'playLabel', 'Play animations')}
         id="pause"
       >
         <span id="pi">
@@ -488,9 +492,11 @@ export function SectionRenderer({ section }: { section: PageSection }) {
       return <CateringEvents content={section.content} />;
     case 'contactCta':
       return <ContactCta content={section.content} />;
-    // The header and footer are drawn by the layout, not in the page flow.
+    // Chrome and dialog wording are drawn by the layout, not in the page flow.
     case 'header':
     case 'footer':
+    case 'bookingDialog':
+    case 'enquiryForm':
       return null;
     default:
       return null;

@@ -69,7 +69,7 @@ export function SiteHeader({ content }: { content: Record<string, unknown> }) {
               <i />
             </span>
             <span className="burger-t">{text(content, 'menuLabel', 'Menu')}</span>
-            <span className="sr">Open site menu</span>
+            <span className="sr">{text(content, 'openMenuLabel', 'Open site menu')}</span>
           </button>
 
           <Link className="logo" href="/" aria-label="Samudhra, home">
@@ -100,7 +100,7 @@ export function SiteHeader({ content }: { content: Record<string, unknown> }) {
           type="button"
           className="sn-scrim"
           tabIndex={-1}
-          aria-label="Close menu"
+          aria-label={text(content, 'closeMenuLabel', 'Close menu')}
           data-mclose=""
         />
 
@@ -109,7 +109,12 @@ export function SiteHeader({ content }: { content: Record<string, unknown> }) {
             <Link href="/" data-mclose="">
               <img className="sn-logo" src={logo} alt="Samudhra" width={1400} height={230} />
             </Link>
-            <button type="button" className="ov-x" aria-label="Close menu" data-mclose="">
+            <button
+              type="button"
+              className="ov-x"
+              aria-label={text(content, 'closeMenuLabel', 'Close menu')}
+              data-mclose=""
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"

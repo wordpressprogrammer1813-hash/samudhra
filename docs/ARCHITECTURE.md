@@ -52,9 +52,16 @@ the fields it has and their types. From that:
 So a new field is one entry in that array — no migration, because the content
 is a `jsonb` column, and no API change, because validation is derived.
 
-`pages` + `page_sections` hold the data. The header and footer are sections on
-a `global` page, which keeps a single editing model for the whole site rather
-than a second "site settings" concept for navigation.
+`pages` + `page_sections` hold the data. The header, the footer and the wording
+of the two dialogs are sections on a `global` page, which keeps a single
+editing model for the whole site rather than a second "site settings" concept
+for navigation and interface text.
+
+Nothing a visitor can read is hardcoded — not the booking dialog, not the
+enquiry form's field labels, not the spoken labels on the menu and pause
+buttons. Components fall back to the approved wording when a field is blank,
+so clearing one in the panel degrades to the original text rather than to an
+empty page.
 
 Unknown keys are stripped on save instead of rejected, so removing a field from
 a def can never lock the owner out of saving a section.
