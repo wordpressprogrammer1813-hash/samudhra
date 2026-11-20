@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Wordmark } from '@/components/site/primitives';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = { title: 'Sign in' };
@@ -24,7 +23,14 @@ export default async function LoginPage({
     <main className="flex min-h-dvh items-center justify-center bg-serenade px-4 py-12">
       <div className="w-full max-w-sm">
         <Link href="/" className="flex justify-center" aria-label="Samudhra, home">
-          <Wordmark className="text-4xl" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- static asset, no optimisation needed */}
+          <img
+            src="/images/samudhra.png"
+            alt="Samudhra"
+            width={1400}
+            height={230}
+            className="h-10 w-auto"
+          />
         </Link>
 
         <div className="mt-8 rounded-card border border-border bg-card p-6">

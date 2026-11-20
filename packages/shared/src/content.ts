@@ -9,7 +9,8 @@ import { z } from 'zod';
  *   - the zod schema the API validates a save against,
  *   - the typed content a React section component receives.
  *
- * Adding a field means editing one array here. Nothing else has to change.
+ * The field sets mirror the approved homepage markup one-to-one, so anything
+ * visible on the page is editable and nothing on the page is hardcoded.
  */
 
 // ---------------------------------------------------------------- field defs
@@ -35,6 +36,7 @@ export interface RepeaterDef {
   itemLabel: string;
   min?: number;
   max?: number;
+  help?: string;
   fields: FieldDef[];
 }
 
@@ -71,10 +73,29 @@ export interface SectionDef {
   fields: SectionField[];
 }
 
-/** Shared sub-field sets, so a "link" means the same thing everywhere. */
-const linkFields: FieldDef[] = [
+/**
+ * What a button does. `reserve` and `order` open the location picker;
+ * `enquiry` opens the event enquiry form; `link` just navigates.
+ */
+export const BUTTON_ACTIONS = ['link', 'reserve', 'order', 'enquiry'] as const;
+export type ButtonAction = (typeof BUTTON_ACTIONS)[number];
+
+const actionField: FieldDef = {
+  name: 'action',
+  label: 'On click',
+  type: 'select',
+  options: [
+    { value: 'link', label: 'Go to a link' },
+    { value: 'reserve', label: 'Open "Reserve a table"' },
+    { value: 'order', label: 'Open "Order online"' },
+    { value: 'enquiry', label: 'Open the event enquiry form' },
+  ],
+};
+
+const buttonFields: FieldDef[] = [
   { name: 'label', label: 'Label', type: 'text', placeholder: 'Reserve a Table' },
-  { name: 'href', label: 'Links to', type: 'url', placeholder: '/contact' },
+  actionField,
+  { name: 'href', label: 'Link (only when "Go to a link")', type: 'url', placeholder: '/menu' },
 ];
 
 const eyebrow: FieldDef = {
@@ -89,17 +110,18 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
   header: {
     kind: 'header',
     label: 'Header',
-    description: 'The bar at the top of every page.',
+    description: 'The bar at the top of every page, and the slide-in menu panel.',
     fields: [
       { name: 'menuLabel', label: 'Menu button text', type: 'text', placeholder: 'Menu' },
+      { name: 'logo', label: 'Wordmark image', type: 'image', placeholder: '/images/samudhra.png' },
       {
         name: 'actions',
-        label: 'Buttons',
+        label: 'Header buttons',
         type: 'repeater',
         itemLabel: 'button',
         max: 3,
         fields: [
-          ...linkFields,
+          ...buttonFields,
           {
             name: 'style',
             label: 'Style',
@@ -112,11 +134,27 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
         ],
       },
       {
-        name: 'navLinks',
-        label: 'Menu overlay links',
+        name: 'navGroups',
+        label: 'Menu panel',
         type: 'repeater',
-        itemLabel: 'link',
-        fields: linkFields,
+        itemLabel: 'group',
+        help: 'Each group is a heading with links under it.',
+        fields: [
+          { name: 'heading', label: 'Group heading', type: 'text', placeholder: 'Our Menu' },
+          {
+            name: 'links',
+            label: 'Links, one "Label | /path" per line',
+            type: 'textarea',
+            rows: 3,
+          },
+        ],
+      },
+      {
+        name: 'panelAddress',
+        label: 'Address under the menu',
+        type: 'textarea',
+        rows: 2,
+        help: 'One address per line.',
       },
     ],
   },
@@ -126,6 +164,7 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
     label: 'Footer',
     description: 'The bottom of every page.',
     fields: [
+      { name: 'logo', label: 'Wordmark image', type: 'image' },
       { name: 'tagline', label: 'Tagline', type: 'textarea', rows: 3 },
       {
         name: 'columns',
@@ -137,40 +176,54 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
           { name: 'heading', label: 'Heading', type: 'text' },
           {
             name: 'links',
-            label: 'Links (one "Label | /path" per line)',
+            label: 'Links, one "Label | /path" per line',
             type: 'textarea',
-            rows: 4,
+            rows: 3,
           },
         ],
       },
       { name: 'legal', label: 'Copyright line', type: 'text', placeholder: '© 2026 Samudhra' },
       { name: 'note', label: 'Small note', type: 'text' },
+      { name: 'markImage', label: 'Corner monogram', type: 'image' },
     ],
   },
 
   hero: {
     kind: 'hero',
     label: 'Hero',
-    description: 'The full-screen opening panel.',
+    description: 'The opening panel. The first heading line animates in letter by letter.',
     fields: [
       eyebrow,
-      { name: 'titleLine1', label: 'Heading, first line', type: 'text', placeholder: 'Tradition' },
+      {
+        name: 'titleLine1',
+        label: 'Heading, first line',
+        type: 'text',
+        help: 'Shown in capitals, one letter at a time.',
+        placeholder: 'Tradition',
+      },
       {
         name: 'titleLine2',
         label: 'Heading, second line',
         type: 'text',
-        help: 'Shown in amber, slightly indented.',
+        help: 'Shown in amber, tucked to the right.',
         placeholder: 'Reinterpreted',
       },
       { name: 'subtitle', label: 'Subtitle', type: 'text' },
       { name: 'backgroundImage', label: 'Background photo', type: 'image' },
+      {
+        name: 'imagePosition',
+        label: 'Photo focus point',
+        type: 'text',
+        help: 'CSS object-position, e.g. "52% 56%".',
+        placeholder: '52% 56%',
+      },
       {
         name: 'actions',
         label: 'Buttons',
         type: 'repeater',
         itemLabel: 'button',
         max: 4,
-        fields: linkFields,
+        fields: buttonFields,
       },
     ],
   },
@@ -178,46 +231,85 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
   menuShowcase: {
     kind: 'menuShowcase',
     label: 'Menu showcase',
-    description: 'Heading, intro and three round dish cards.',
+    description: 'Centred heading and three dishes in rotating star frames.',
     fields: [
       eyebrow,
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'body', label: 'Intro paragraph', type: 'textarea', rows: 3 },
+      { name: 'starImage', label: 'Star frame graphic', type: 'image' },
       {
         name: 'cards',
-        label: 'Cards',
+        label: 'Dishes',
         type: 'repeater',
-        itemLabel: 'card',
+        itemLabel: 'dish',
         max: 3,
         fields: [
+          { name: 'numeral', label: 'Numeral', type: 'text', placeholder: 'i.' },
           { name: 'title', label: 'Title', type: 'text', placeholder: 'Curries' },
           { name: 'description', label: 'One line', type: 'text' },
           { name: 'image', label: 'Photo', type: 'image' },
+          {
+            name: 'imageMode',
+            label: 'Photo style',
+            type: 'select',
+            options: [
+              { value: 'plate', label: 'Round plate' },
+              { value: 'cutout', label: 'Cut-out, no circle' },
+            ],
+          },
+          {
+            name: 'imagePosition',
+            label: 'Focus point',
+            type: 'text',
+            placeholder: '47% 52%',
+          },
+          {
+            name: 'imageScale',
+            label: 'Zoom',
+            type: 'text',
+            help: 'How far to zoom into the photo, e.g. 1.25. Leave empty for none.',
+            placeholder: '1.25',
+          },
           { name: 'linkLabel', label: 'Link text', type: 'text', placeholder: 'View menu' },
           { name: 'href', label: 'Links to', type: 'url', placeholder: '/menu' },
         ],
       },
       { name: 'ctaLabel', label: 'Button text', type: 'text', placeholder: 'Order Online' },
-      { name: 'ctaHref', label: 'Button links to', type: 'url' },
+      actionField,
+      { name: 'ctaHref', label: 'Button link (only when "Go to a link")', type: 'url' },
     ],
   },
 
   weekendThali: {
     kind: 'weekendThali',
     label: 'Weekend thali',
-    description: 'Wide panel with a photo and two buttons.',
+    description: 'Amber poster: big heading, the thali in the middle, photos scattered around.',
     fields: [
       eyebrow,
-      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'titleLine1', label: 'Heading, first line', type: 'text', placeholder: 'Weekend' },
+      { name: 'titleLine2', label: 'Heading, second line', type: 'text', placeholder: 'Thali' },
       { name: 'body', label: 'Paragraph', type: 'textarea', rows: 4 },
-      { name: 'image', label: 'Photo', type: 'image' },
+      { name: 'plateImage', label: 'Centre photo', type: 'image' },
+      {
+        name: 'frames',
+        label: 'Scattered photos',
+        type: 'repeater',
+        itemLabel: 'photo',
+        max: 4,
+        help: 'Exactly four, in the fixed positions from the design. They show in black and white until hovered.',
+        fields: [
+          { name: 'image', label: 'Photo', type: 'image' },
+          { name: 'alt', label: 'Description for screen readers', type: 'text' },
+          { name: 'imagePosition', label: 'Focus point', type: 'text', placeholder: '45% 60%' },
+        ],
+      },
       {
         name: 'actions',
         label: 'Buttons',
         type: 'repeater',
         itemLabel: 'button',
         max: 2,
-        fields: linkFields,
+        fields: buttonFields,
       },
     ],
   },
@@ -225,21 +317,21 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
   diningLounge: {
     kind: 'diningLounge',
     label: 'Dining & lounge',
-    description: 'Two cards for the dining room and the lounge.',
+    description: 'A heading and a list of rows, each with a thumbnail.',
     fields: [
       eyebrow,
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'body', label: 'Paragraph', type: 'textarea', rows: 3 },
       {
-        name: 'cards',
-        label: 'Cards',
+        name: 'rows',
+        label: 'Rows',
         type: 'repeater',
-        itemLabel: 'card',
-        max: 3,
+        itemLabel: 'row',
         fields: [
           { name: 'title', label: 'Title', type: 'text' },
           { name: 'description', label: 'One line', type: 'text' },
-          { name: 'image', label: 'Photo', type: 'image' },
+          { name: 'image', label: 'Thumbnail', type: 'image' },
+          { name: 'imagePosition', label: 'Focus point', type: 'text', placeholder: '45% 40%' },
           { name: 'href', label: 'Links to', type: 'url' },
         ],
       },
@@ -249,26 +341,27 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
   ourStory: {
     kind: 'ourStory',
     label: 'Our story',
-    description: 'Text panel with a photo and one button.',
+    description: 'Amber panel with the drifting mark on the left.',
     fields: [
       eyebrow,
       { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'quote', label: 'Large line under the heading', type: 'textarea', rows: 2 },
       { name: 'body', label: 'Paragraph', type: 'textarea', rows: 5 },
-      { name: 'image', label: 'Photo', type: 'image' },
+      { name: 'markImage', label: 'Decorative mark', type: 'image' },
       { name: 'ctaLabel', label: 'Button text', type: 'text' },
-      { name: 'ctaHref', label: 'Button links to', type: 'url' },
+      actionField,
+      { name: 'ctaHref', label: 'Button link (only when "Go to a link")', type: 'url' },
     ],
   },
 
   cateringEvents: {
     kind: 'cateringEvents',
     label: 'Catering & events',
-    description: 'Text panel with a photo and two linked cards.',
+    description: 'Dark panel with two cards whose photos sit above them.',
     fields: [
       eyebrow,
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'body', label: 'Paragraph', type: 'textarea', rows: 4 },
-      { name: 'image', label: 'Photo', type: 'image' },
       {
         name: 'cards',
         label: 'Cards',
@@ -276,10 +369,14 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
         itemLabel: 'card',
         max: 2,
         fields: [
-          { name: 'title', label: 'Title', type: 'text' },
-          { name: 'description', label: 'One line', type: 'text' },
+          { name: 'titleLine1', label: 'Title, first line', type: 'text', placeholder: 'Catering' },
+          { name: 'titleLine2', label: 'Title, second line', type: 'text', placeholder: 'Menu' },
+          { name: 'note', label: 'Line under the title', type: 'text' },
+          { name: 'image', label: 'Photo', type: 'image' },
+          { name: 'imagePosition', label: 'Focus point', type: 'text', placeholder: '45% 55%' },
           { name: 'linkLabel', label: 'Link text', type: 'text' },
-          { name: 'href', label: 'Links to', type: 'url' },
+          actionField,
+          { name: 'href', label: 'Links to (only when "Go to a link")', type: 'url' },
         ],
       },
     ],
@@ -287,8 +384,8 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
 
   contactCta: {
     kind: 'contactCta',
-    label: 'Contact band',
-    description: 'The last band before the footer.',
+    label: 'Contact',
+    description: 'Intro, buttons and one block per location.',
     fields: [
       eyebrow,
       { name: 'heading', label: 'Heading', type: 'text' },
@@ -299,7 +396,24 @@ export const SECTION_DEFS: Record<SectionKind, SectionDef> = {
         type: 'repeater',
         itemLabel: 'button',
         max: 3,
-        fields: linkFields,
+        fields: buttonFields,
+      },
+      {
+        name: 'locations',
+        label: 'Locations',
+        type: 'repeater',
+        itemLabel: 'location',
+        max: 4,
+        help: 'These also fill the location picker on the Reserve and Order buttons.',
+        fields: [
+          { name: 'label', label: 'Small label', type: 'text', placeholder: 'Location 01' },
+          { name: 'name', label: 'Name', type: 'text', placeholder: 'New Jersey' },
+          { name: 'address', label: 'Address', type: 'text' },
+          { name: 'hours', label: 'Hours', type: 'text' },
+          { name: 'phone', label: 'Phone', type: 'text' },
+          { name: 'email', label: 'Email', type: 'text' },
+          { name: 'linkLabel', label: 'Link text', type: 'text', placeholder: 'Reserve here' },
+        ],
       },
     ],
   },
@@ -316,10 +430,6 @@ function fieldSchema(field: FieldDef): z.ZodTypeAny {
         .string()
         .trim()
         .default(field.options?.[0]?.value ?? '');
-    case 'url':
-    case 'image':
-    case 'text':
-    case 'textarea':
     default:
       // Everything is optional: the client may save a half-filled section.
       return z.string().trim().max(5000).default('');
@@ -408,8 +518,8 @@ export function parseSectionContent(kind: SectionKind, raw: unknown): Record<str
 }
 
 /**
- * Footer link columns are edited as "Label | /path" lines, which keeps the
- * form simple. This turns one of those blocks into links.
+ * Link columns are edited as "Label | /path" lines, which keeps the form
+ * simple. This turns one of those blocks into links.
  */
 export function parseLinkLines(value: unknown): { label: string; href: string }[] {
   if (typeof value !== 'string') return [];
@@ -422,4 +532,13 @@ export function parseLinkLines(value: unknown): { label: string; href: string }[
       return { label, href };
     })
     .filter((l) => l.label.length > 0);
+}
+
+/** Splits a textarea into non-empty lines. */
+export function parseLines(value: unknown): string[] {
+  if (typeof value !== 'string') return [];
+  return value
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
 }

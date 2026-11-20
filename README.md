@@ -4,8 +4,11 @@ Website for Samudhra, a contemporary Indian restaurant, plus the admin panel
 its owner uses to edit the content of every page without touching code.
 
 Next.js front end, a separate Node/Express API, Supabase for auth and Postgres.
-The public site is built from the Figma file — see
-[docs/DESIGN.md](docs/DESIGN.md) for the screen inventory and design tokens.
+
+The home page is a faithful port of the approved single-file build: its
+stylesheet lives verbatim in `apps/web/src/styles/site.css`, the React sections
+emit the same markup, and every string and photo comes from the database so the
+owner can change them. See [docs/DESIGN.md](docs/DESIGN.md).
 
 ```
 Samudhra/

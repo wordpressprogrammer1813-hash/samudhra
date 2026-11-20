@@ -1,172 +1,131 @@
+/* eslint-disable @next/next/no-img-element -- CMS images come from arbitrary hosts */
 import Link from 'next/link';
 import type { PageSection } from '@samudra/shared';
-import { ArrowLink, Container, Diamond, Eyebrow, Lattice, PillLink, Prose } from './primitives';
 import { list, text } from '@/lib/content';
-import { cn } from '@/lib/utils';
+import { ActionButton } from './site-header';
 
 /**
- * One component per section `kind`. Each reads its fields out of the JSON the
- * client edits in the admin panel, and every field is optional — a half-filled
- * section still renders rather than crashing the page.
+ * One component per section kind, emitting the same markup and class names as
+ * the approved homepage so the ported stylesheet in src/styles/site.css draws
+ * it exactly as designed. Every string and image comes from the admin panel.
  */
 
-/* ------------------------------------------------------------- utilities */
+const ARROW = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
+    <path d="M4 12h16M14 6l6 6-6 6" />
+  </svg>
+);
 
-/**
- * Content images come from the CMS as arbitrary URLs, so they go through a
- * plain <img> rather than next/image, which would need every host allow-listed.
- */
-function Photo({
-  src,
-  alt,
-  className,
-  rounded = 'rounded-soft',
-}: {
-  src?: string;
-  alt: string;
-  className?: string;
-  rounded?: string;
-}) {
-  if (!src) {
-    return (
-      <div
-        aria-hidden
-        className={cn(
-          'relative grid place-items-center overflow-hidden bg-heath-14',
-          rounded,
-          className,
-        )}
-      >
-        <Lattice opacity={0.25} />
-        <span className="u-eyebrow relative text-heath-35">Photo</span>
-      </div>
-    );
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- CMS images, arbitrary hosts
-    <img src={src} alt={alt} loading="lazy" className={cn('object-cover', rounded, className)} />
-  );
+/** `object-position` only when the client set one, so CSS defaults win. */
+function pos(value: string | undefined) {
+  return value ? { objectPosition: value } : undefined;
 }
 
-/** The amber petal ring that frames the round dish photos. */
-function MandalaFrame({ children }: { children: React.ReactNode }) {
-  const petals = Array.from({ length: 16 }, (_, i) => i * (360 / 16));
-
-  return (
-    <div className="relative mx-auto aspect-square w-full max-w-[20rem]">
-      <svg
-        aria-hidden
-        viewBox="0 0 120 120"
-        className="absolute inset-0 size-full text-zest"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="0.9"
-      >
-        {petals.map((angle) => (
-          <path
-            key={angle}
-            d="M60 22 C51 16, 51 6, 60 2 C69 6, 69 16, 60 22 Z"
-            transform={`rotate(${angle} 60 60)`}
-          />
-        ))}
-      </svg>
-      <div className="absolute inset-[14%] overflow-hidden rounded-full border-4 border-heath">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/** Circular arrow button used at the end of the dining rows. */
-function ArrowCircle() {
-  return (
-    <span
-      aria-hidden
-      className="grid size-11 shrink-0 place-items-center rounded-full border border-heath-25 text-heath transition-colors group-hover:border-heath group-hover:bg-heath group-hover:text-serenade"
-    >
-      <svg
-        viewBox="0 0 20 10"
-        className="h-2.5 w-5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <path d="M0 5h18M14 1l4 4-4 4" />
-      </svg>
-    </span>
-  );
+/** Focus point plus an optional zoom, as the design uses on some photos. */
+function posZoom(position: string | undefined, scale: string | undefined) {
+  const zoom = Number(scale);
+  return {
+    ...(position ? { objectPosition: position } : {}),
+    ...(Number.isFinite(zoom) && zoom > 0 ? { transform: `scale(${zoom})` } : {}),
+  };
 }
 
 /* ------------------------------------------------------------------ hero */
 
 export function Hero({ content }: { content: Record<string, unknown> }) {
-  const image = text(content, 'backgroundImage');
+  const photo = text(content, 'backgroundImage');
+  const line1 = text(content, 'titleLine1');
+  const line2 = text(content, 'titleLine2');
   const actions = list(content, 'actions');
+  const letters = [...line1];
 
   return (
-    <section className="relative isolate flex min-h-[clamp(34rem,78vh,52rem)] items-center overflow-hidden bg-creole">
-      {image ? (
-        // eslint-disable-next-line @next/next/no-img-element -- CMS image, arbitrary host
-        <img src={image} alt="" className="absolute inset-0 -z-20 size-full object-cover" />
+    <section className="hero" id="top" aria-labelledby="hero-t">
+      {photo ? (
+        <div className="h-photo" aria-hidden="true">
+          <img
+            src={photo}
+            alt=""
+            width={2400}
+            height={1600}
+            style={pos(text(content, 'imagePosition', '52% 56%'))}
+          />
+        </div>
       ) : null}
+      <div className="wash" aria-hidden="true" />
+      <div className="glint g-sweep" aria-hidden="true" />
+      <div className="glint g-spot" aria-hidden="true" />
+      <div className="rim" aria-hidden="true" />
 
-      {/* Warm overlay so the type always holds up over any photograph. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,var(--color-creole-55)_0%,var(--color-creole-82)_60%,var(--color-creole)_100%)]"
-      />
-      <Lattice className="-z-10" opacity={0.08} />
+      <div className="ct">
+        <p className="eb">{text(content, 'eyebrow')}</p>
 
-      {/* Inset hairline frame with the diamond markers from the design. */}
-      <div aria-hidden className="absolute inset-5 border border-serenade-22 sm:inset-8" />
-      <Diamond className="absolute left-1/2 top-4 -translate-x-1/2 sm:top-7" />
-      <Diamond className="absolute bottom-4 left-1/2 -translate-x-1/2 sm:bottom-7" />
-
-      <Container className="relative py-24 text-center">
-        <Eyebrow rules onDark>
-          {text(content, 'eyebrow')}
-        </Eyebrow>
-
-        <h1 className="mt-8 text-[clamp(3rem,9vw,6.625rem)] font-normal leading-[0.95] tracking-tight text-serenade">
-          {text(content, 'titleLine1')}
-          {text(content, 'titleLine2') ? (
-            <span className="block pl-[0.12em] text-zest">{text(content, 'titleLine2')}</span>
+        <h1
+          id="hero-t"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            fontWeight: 400,
+          }}
+        >
+          <span className="sr">
+            {line1}
+            {line2 ? `, ${line2}` : ''}
+          </span>
+          <span className="t1" aria-hidden="true">
+            {letters.map((letter, i) => (
+              <span key={`${letter}-${i}`} style={{ animationDelay: `${0.45 + i * 0.05}s` }}>
+                {letter}
+              </span>
+            ))}
+          </span>
+          {line2 ? (
+            <span className="t2" aria-hidden="true">
+              {line2}
+            </span>
           ) : null}
         </h1>
 
-        {text(content, 'subtitle') ? (
-          <p className="mt-8 flex items-center justify-center gap-4 text-link text-serenade-78">
-            <Diamond />
-            {text(content, 'subtitle')}
-            <Diamond />
-          </p>
-        ) : null}
+        <p className="lede">
+          <i aria-hidden="true" />
+          {text(content, 'subtitle')}
+          <i aria-hidden="true" />
+        </p>
 
-        {actions.length > 0 ? (
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            {actions.map((action) => (
-              <PillLink
-                key={`${action.label}-${action.href}`}
-                href={action.href}
-                variant="outlineOnDark"
-              >
-                {action.label}
-              </PillLink>
-            ))}
-          </div>
-        ) : null}
-      </Container>
+        <div className="acts">
+          {actions.map((action) => (
+            <ActionButton key={`${action.label}-${action.action}`} action={action} className="lb" />
+          ))}
+        </div>
+      </div>
 
-      <svg
-        aria-hidden
-        viewBox="0 0 24 12"
-        className="absolute bottom-12 left-1/2 h-3 w-6 -translate-x-1/2 text-serenade-75"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.2"
+      <a className="chev" href="#menu" aria-label="Scroll down">
+        <svg
+          viewBox="0 0 34 18"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          aria-hidden="true"
+        >
+          <path d="M2 2l15 13L32 2" />
+        </svg>
+      </a>
+
+      <button
+        type="button"
+        className="pause"
+        aria-pressed="false"
+        aria-label="Pause animations"
+        id="pause"
       >
-        <path d="M1 1l11 10L23 1" />
-      </svg>
+        <span id="pi">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+          </svg>
+        </span>
+      </button>
     </section>
   );
 }
@@ -175,60 +134,72 @@ export function Hero({ content }: { content: Record<string, unknown> }) {
 
 export function MenuShowcase({ content }: { content: Record<string, unknown> }) {
   const cards = list(content, 'cards');
+  const star = text(content, 'starImage');
   const ctaLabel = text(content, 'ctaLabel');
 
   return (
-    <section className="relative overflow-hidden bg-serenade py-24 sm:py-32">
-      <Lattice opacity={0.14} />
-
-      <Container className="relative text-center">
-        <Eyebrow rules>{text(content, 'eyebrow')}</Eyebrow>
-
-        <h2 className="mx-auto mt-6 max-w-4xl text-[clamp(2.25rem,5vw,4rem)] font-normal leading-tight tracking-tight text-heath">
+    <section className="sig" id="menu" aria-labelledby="sig-t">
+      <div className="sig-h">
+        <p className="sig-k rv">{text(content, 'eyebrow')}</p>
+        <h2 className="sig-t rv rv2" id="sig-t">
           {text(content, 'heading')}
         </h2>
+        <p className="sig-p rv">{text(content, 'body')}</p>
+      </div>
 
-        <div className="mx-auto mt-6 max-w-xl text-heath-75">
-          <Prose text={text(content, 'body')} />
-        </div>
+      <div className="trio">
+        {cards.map((card, i) => (
+          <Link
+            key={`${card.title}-${i}`}
+            className={`dish-c rv${i === 1 ? ' rv2' : ''}`}
+            href={card.href || '#menu'}
+          >
+            <div className="dc-st">
+              {star ? (
+                <div className="dc-star" aria-hidden="true">
+                  <img src={star} alt="" loading="lazy" />
+                </div>
+              ) : null}
 
-        {cards.length > 0 ? (
-          <div className="mt-20 grid gap-14 md:grid-cols-3">
-            {cards.map((card) => (
-              <div key={card.title} className="flex flex-col items-center">
-                <MandalaFrame>
-                  <Photo
+              {card.imageMode === 'cutout' ? (
+                <div className="dc-cut">
+                  <img src={card.image} alt={card.title ?? ''} loading="lazy" />
+                </div>
+              ) : (
+                <div className="dc-plate">
+                  <img
                     src={card.image}
                     alt={card.title ?? ''}
-                    rounded="rounded-full"
-                    className="size-full"
+                    loading="lazy"
+                    style={posZoom(card.imagePosition, card.imageScale)}
                   />
-                </MandalaFrame>
+                </div>
+              )}
+            </div>
 
-                <h3 className="mt-8 text-h3 text-heath">{card.title}</h3>
-                {card.description ? (
-                  <p className="mt-3 text-small normal-case tracking-normal text-heath-75">
-                    {card.description}
-                  </p>
-                ) : null}
-                {card.linkLabel ? (
-                  <ArrowLink href={card.href ?? '#'} className="mt-5">
-                    {card.linkLabel}
-                  </ArrowLink>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        ) : null}
+            <span className="dc-n">{card.numeral}</span>
+            <h3 className="dc-t">{card.title}</h3>
+            <p className="dc-d">{card.description}</p>
+            <span className="dc-go">
+              {card.linkLabel}
+              {ARROW}
+            </span>
+          </Link>
+        ))}
+      </div>
 
-        {ctaLabel ? (
-          <div className="mt-20">
-            <PillLink href={text(content, 'ctaHref')} variant="solid">
-              {ctaLabel}
-            </PillLink>
-          </div>
-        ) : null}
-      </Container>
+      {ctaLabel ? (
+        <div className="sig-cta rv">
+          <ActionButton
+            action={{
+              label: ctaLabel,
+              action: text(content, 'action', 'order'),
+              href: text(content, 'ctaHref'),
+            }}
+            className="btn b-fill"
+          />
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -236,49 +207,54 @@ export function MenuShowcase({ content }: { content: Record<string, unknown> }) 
 /* ---------------------------------------------------------- weekendThali */
 
 export function WeekendThali({ content }: { content: Record<string, unknown> }) {
+  const frames = list(content, 'frames');
   const actions = list(content, 'actions');
+  const plate = text(content, 'plateImage');
 
   return (
-    <section className="relative overflow-hidden bg-zest py-20 sm:py-28">
-      <Container className="relative">
-        <div className="relative z-10 max-w-xl">
-          <span className="u-eyebrow text-heath">{text(content, 'eyebrow')}</span>
-          <h2 className="mt-4 text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[0.95] tracking-tight text-heath">
-            {text(content, 'heading')}
-          </h2>
-        </div>
-
-        <div className="relative mt-10 grid items-end gap-10 lg:mt-0 lg:grid-cols-[1fr_22rem]">
-          <div className="relative mx-auto w-full max-w-[32rem] lg:-mt-8">
-            <Photo
-              src={text(content, 'image')}
-              alt={text(content, 'heading')}
-              rounded="rounded-full"
-              className="aspect-square w-full border-4 border-serenade-22"
-            />
+    <section className="spl" id="thali" aria-labelledby="thali-t">
+      <div className="wrap">
+        <div className="col">
+          <div className="sp-h">
+            <p className="sp-eb rv">{text(content, 'eyebrow')}</p>
+            <h2 className="sp-t rv rv2" id="thali-t">
+              {text(content, 'titleLine1')}
+              <br />
+              {text(content, 'titleLine2')}
+            </h2>
           </div>
 
-          <div className="text-left lg:pb-10 lg:text-right">
-            <div className="text-small normal-case tracking-normal text-creole">
-              <Prose text={text(content, 'body')} />
+          {frames.slice(0, 4).map((frame, i) => (
+            <figure key={`frame-${i}`} className={`fr fr-${i + 1} rv${i >= 2 ? ' rv2' : ''}`}>
+              <img
+                src={frame.image}
+                alt={frame.alt ?? ''}
+                loading="lazy"
+                style={pos(frame.imagePosition)}
+              />
+            </figure>
+          ))}
+
+          {plate ? (
+            <div className="sp-plate rv">
+              <img src={plate} alt={text(content, 'titleLine2', 'Thali')} loading="lazy" />
             </div>
+          ) : null}
 
-            {actions.length > 0 ? (
-              <div className="mt-6 flex flex-wrap gap-3 lg:justify-end">
-                {actions.map((action, i) => (
-                  <PillLink
-                    key={`${action.label}-${action.href}`}
-                    href={action.href}
-                    variant={i === 0 ? 'solid' : 'outline'}
-                  >
-                    {action.label}
-                  </PillLink>
-                ))}
-              </div>
-            ) : null}
+          <div className="sp-d rv">
+            <p className="sp-p">{text(content, 'body')}</p>
+            <div className="sp-a">
+              {actions.map((action, i) => (
+                <ActionButton
+                  key={`${action.label}-${i}`}
+                  action={action}
+                  className={`btn ${i === 0 ? 'b-bu' : 'b-bl'} b-sm`}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
@@ -286,46 +262,38 @@ export function WeekendThali({ content }: { content: Record<string, unknown> }) 
 /* ---------------------------------------------------------- diningLounge */
 
 export function DiningLounge({ content }: { content: Record<string, unknown> }) {
-  const cards = list(content, 'cards');
+  const rows = list(content, 'rows');
 
   return (
-    <section className="relative overflow-hidden bg-serenade py-24 sm:py-28">
-      <Lattice className="left-auto w-1/4" opacity={0.18} />
-
-      <Container className="relative">
-        <div className="grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-end">
-          <div>
-            <Eyebrow>{text(content, 'eyebrow')}</Eyebrow>
-            <h2 className="mt-3 text-[clamp(2rem,4.5vw,3.5rem)] font-normal leading-tight tracking-tight text-heath">
+    <section className="sec" id="dining" aria-labelledby="dining-t">
+      <div className="wrap">
+        <div className="sh">
+          <div className="sh-l">
+            <span className="sh-n rv">{text(content, 'eyebrow')}</span>
+            <h2 className="sh-t rv rv2" id="dining-t">
               {text(content, 'heading')}
             </h2>
           </div>
-          <div className="text-small normal-case tracking-normal text-heath-75">
-            <Prose text={text(content, 'body')} />
+          <div className="sh-r rv">
+            <p className="sh-p">{text(content, 'body')}</p>
           </div>
         </div>
 
-        <ul className="mt-12 border-t border-heath-14">
-          {cards.map((card) => (
-            <li key={card.title} className="border-b border-heath-14">
-              <Link href={card.href || '#'} className="group flex items-center gap-5 py-5 sm:gap-8">
-                <Photo
-                  src={card.image}
-                  alt={card.title ?? ''}
-                  className="hidden h-20 w-32 shrink-0 sm:block"
-                />
-                <p className="hidden w-52 shrink-0 text-small normal-case tracking-normal text-heath-75 lg:block">
-                  {card.description}
-                </p>
-                <h3 className="flex-1 text-[clamp(1.6rem,3.5vw,2.75rem)] font-normal leading-tight text-heath transition-colors group-hover:text-zest">
-                  {card.title}
-                </h3>
-                <ArrowCircle />
-              </Link>
-            </li>
+        <div className="rows">
+          {rows.map((row, i) => (
+            <Link key={`${row.title}-${i}`} className="row rv" href={row.href || '#'}>
+              <div className="r-th">
+                <img src={row.image} alt="" loading="lazy" style={pos(row.imagePosition)} />
+              </div>
+              <p className="r-d">{row.description}</p>
+              <h3 className="r-t">{row.title}</h3>
+              <span className="r-a" aria-hidden="true">
+                {ARROW}
+              </span>
+            </Link>
           ))}
-        </ul>
-      </Container>
+        </div>
+      </div>
     </section>
   );
 }
@@ -333,54 +301,41 @@ export function DiningLounge({ content }: { content: Record<string, unknown> }) 
 /* -------------------------------------------------------------- ourStory */
 
 export function OurStory({ content }: { content: Record<string, unknown> }) {
-  const body = text(content, 'body');
-  const [lead, ...rest] = body
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+  const mark = text(content, 'markImage');
   const ctaLabel = text(content, 'ctaLabel');
 
   return (
-    <section className="relative overflow-hidden bg-zest py-20 sm:py-24">
-      <Container className="relative grid items-center gap-12 lg:grid-cols-2">
-        <Photo
-          src={text(content, 'image')}
-          alt={text(content, 'heading')}
-          className="aspect-4/5 w-full max-w-md"
-        />
+    <section className="story" id="story" aria-labelledby="story-t">
+      <div className="wrap st-g">
+        {mark ? (
+          <div className="st-mk" aria-hidden="true">
+            <img src={mark} alt="" loading="lazy" />
+          </div>
+        ) : null}
 
-        <div>
-          <Eyebrow rules={false} className="text-creole">
-            {text(content, 'eyebrow')}
-          </Eyebrow>
-
-          <h2 className="mt-4 text-[clamp(2.25rem,5vw,4rem)] font-normal leading-tight tracking-tight text-heath">
+        <div className="st-c">
+          <p className="st-k rv">{text(content, 'eyebrow')}</p>
+          <h2 className="st-t rv rv2" id="story-t">
             {text(content, 'heading')}
           </h2>
-
-          {lead ? (
-            <p className="mt-5 max-w-md text-[clamp(1.1rem,2vw,1.4rem)] leading-snug text-heath">
-              {lead}
-            </p>
-          ) : null}
-
-          <hr className="my-7 w-16 border-heath-35" />
-
-          {rest.length > 0 ? (
-            <div className="max-w-lg text-small normal-case tracking-normal text-creole">
-              <Prose text={rest.join('\n\n')} />
-            </div>
-          ) : null}
+          <p className="st-q rv rv2">{text(content, 'quote')}</p>
+          <span className="st-rule rv" aria-hidden="true" />
+          <p className="st-p rv">{text(content, 'body')}</p>
 
           {ctaLabel ? (
-            <div className="mt-8">
-              <PillLink href={text(content, 'ctaHref')} variant="solid">
-                {ctaLabel}
-              </PillLink>
+            <div className="st-a rv">
+              <ActionButton
+                action={{
+                  label: ctaLabel,
+                  action: text(content, 'action', 'link'),
+                  href: text(content, 'ctaHref'),
+                }}
+                className="btn b-bu"
+              />
             </div>
           ) : null}
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
@@ -391,55 +346,61 @@ export function CateringEvents({ content }: { content: Record<string, unknown> }
   const cards = list(content, 'cards');
 
   return (
-    <section className="relative overflow-hidden bg-heath py-20 sm:py-28">
-      <Lattice opacity={0.07} />
-
-      <Container className="relative grid items-center gap-14 lg:grid-cols-[1fr_1.2fr]">
-        <div>
-          <Eyebrow>{text(content, 'eyebrow')}</Eyebrow>
-          <h2 className="mt-4 text-[clamp(2.25rem,5vw,3.75rem)] font-normal leading-tight tracking-tight text-serenade">
+    <section
+      className="sec cat dk"
+      id="catering"
+      aria-labelledby="cat-t"
+      style={{ background: '#4D0F10', color: '#FFF8ED' }}
+    >
+      <div className="wrap ce-g">
+        <div className="ce-c">
+          <span className="sh-n rv">{text(content, 'eyebrow')}</span>
+          <h2 className="sh-t rv rv2" id="cat-t">
             {text(content, 'heading')}
           </h2>
-          <div className="mt-6 max-w-sm text-small normal-case tracking-normal text-serenade-75">
-            <Prose text={text(content, 'body')} />
-          </div>
+          <p className="ce-p rv">{text(content, 'body')}</p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          {cards.map((card, i) => (
-            <article
-              key={card.title}
-              className={cn(
-                'relative rounded-panel bg-serenade px-7 pb-7 pt-24',
-                i % 2 === 1 && 'sm:mt-12',
-              )}
-            >
-              <div className="absolute -top-14 left-1/2 size-32 -translate-x-1/2 overflow-hidden rounded-full border-4 border-heath">
-                <Photo
-                  src={card.image}
-                  alt={card.title ?? ''}
-                  rounded="rounded-full"
-                  className="size-full"
-                />
-              </div>
-
-              <h3 className="text-[clamp(1.5rem,3vw,2.25rem)] font-normal uppercase leading-tight text-heath">
-                {card.title}
-              </h3>
-              {card.description ? (
-                <p className="mt-2 text-small normal-case tracking-normal text-heath-75">
-                  {card.description}
-                </p>
-              ) : null}
-              {card.linkLabel ? (
-                <ArrowLink href={card.href ?? '#'} className="mt-6 w-full justify-between">
+        <div className="cards">
+          {cards.map((card, i) => {
+            const inner = (
+              <>
+                <div className="c-img">
+                  <img
+                    src={card.image}
+                    alt={`${card.titleLine1 ?? ''} ${card.titleLine2 ?? ''}`.trim()}
+                    loading="lazy"
+                    style={pos(card.imagePosition)}
+                  />
+                </div>
+                <span className="c-row">
+                  <span className="c-t">
+                    {card.titleLine1}
+                    <br />
+                    {card.titleLine2}
+                  </span>
+                  <span className="c-n">{card.note}</span>
+                </span>
+                <span className="c-rule" />
+                <span className="c-go">
                   {card.linkLabel}
-                </ArrowLink>
-              ) : null}
-            </article>
-          ))}
+                  {ARROW}
+                </span>
+              </>
+            );
+
+            return card.action === 'enquiry' ? (
+              <button key={`card-${i}`} type="button" className="card rv-card" data-enq="">
+                {inner}
+              </button>
+            ) : (
+              <Link key={`card-${i}`} className="card rv-card" href={card.href || '#catering'}>
+                {inner}
+              </Link>
+            );
+          })}
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
@@ -448,41 +409,69 @@ export function CateringEvents({ content }: { content: Record<string, unknown> }
 
 export function ContactCta({ content }: { content: Record<string, unknown> }) {
   const actions = list(content, 'actions');
+  const locations = list(content, 'locations');
 
   return (
-    <section className="relative overflow-hidden bg-serenade py-20 sm:py-24">
-      <Container className="relative max-w-[73rem] text-center">
-        <Eyebrow rules>{text(content, 'eyebrow')}</Eyebrow>
-
-        <h2 className="mt-5 text-[clamp(2rem,4.5vw,3.5rem)] font-normal leading-tight tracking-tight text-heath">
-          {text(content, 'heading')}
-        </h2>
-
-        <div className="mx-auto mt-5 max-w-lg text-heath-75">
-          <Prose text={text(content, 'body')} />
-        </div>
-
-        {actions.length > 0 ? (
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
-            {actions.map((action, i) => (
-              <PillLink
-                key={`${action.label}-${action.href}`}
-                href={action.href}
-                variant={i === 0 ? 'solid' : 'outline'}
-              >
-                {action.label}
-              </PillLink>
-            ))}
+    <section className="sec" id="contact" aria-labelledby="contact-t">
+      <div className="wrap">
+        <div className="ct-g">
+          <div className="ct-i">
+            <span className="sh-n rv">{text(content, 'eyebrow')}</span>
+            <h2 className="sh-t rv rv2" id="contact-t">
+              {text(content, 'heading')}
+            </h2>
+            <p className="sh-p rv">{text(content, 'body')}</p>
+            <div className="rv" style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              {actions.map((action, i) => (
+                <ActionButton
+                  key={`${action.label}-${i}`}
+                  action={action}
+                  className={`btn ${i === 0 ? 'b-fill' : 'b-line'} b-sm`}
+                />
+              ))}
+            </div>
           </div>
-        ) : null}
-      </Container>
+
+          {locations.map((loc, i) => (
+            <div className="loc rv" key={`${loc.name}-${i}`}>
+              <p className="ct-sub">{loc.label}</p>
+              <h3 className="loc-n">{loc.name}</h3>
+              <div className="spec">
+                <Spec label="Address" value={loc.address} />
+                <Spec label="Hours" value={loc.hours} />
+                <Spec label="Phone" value={loc.phone} />
+                <Spec label="Email" value={loc.email} />
+              </div>
+              <div className="loc-a">
+                <button type="button" className="arrow" data-act="reserve" data-loc={loc.name}>
+                  {loc.linkLabel || 'Reserve here'}
+                  {ARROW}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
+  );
+}
+
+/** One Address / Hours / Phone / Email row. */
+function Spec({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
+  // Square brackets mark copy the client has not supplied yet; the design
+  // highlights those so they are obvious on the page.
+  const placeholder = value.startsWith('[') && value.endsWith(']');
+  return (
+    <p className="sp">
+      <span className="sp-k">{label}</span>
+      <span className="sp-v">{placeholder ? <span className="ph">{value}</span> : value}</span>
+    </p>
   );
 }
 
 /* -------------------------------------------------------------- renderer */
 
-/** Maps a section row from the database to the component that draws it. */
 export function SectionRenderer({ section }: { section: PageSection }) {
   switch (section.kind) {
     case 'hero':
@@ -499,7 +488,7 @@ export function SectionRenderer({ section }: { section: PageSection }) {
       return <CateringEvents content={section.content} />;
     case 'contactCta':
       return <ContactCta content={section.content} />;
-    // header and footer are drawn by the layout, not inside the page flow.
+    // The header and footer are drawn by the layout, not in the page flow.
     case 'header':
     case 'footer':
       return null;

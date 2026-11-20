@@ -1,4 +1,23 @@
-# Samudhra — Figma design inventory
+# Samudhra — design reference
+
+> **The home page's source of truth is the approved single-file build**,
+> `samudhra-homepage-final.html`, not the Figma frames. It is newer: real
+> photography, the letter-by-letter hero, the black-and-white thali collage,
+> the per-location contact blocks and six responsive breakpoints the Figma
+> never had.
+>
+> Its stylesheet was ported verbatim into
+> [`apps/web/src/styles/site.css`](../apps/web/src/styles/site.css) and the
+> React sections emit the same markup and class names, so the two render
+> identically — section heights and total page height match exactly. Change
+> the look in that stylesheet, not by overriding it from components.
+>
+> Its photography was extracted to `apps/web/public/images/`.
+>
+> The Figma inventory below still describes the six pages that are not built
+> yet.
+
+## Figma inventory
 
 Source: [Figma file `d5Xv5xyeuizdoMYmg6XAmH`](https://www.figma.com/design/d5Xv5xyeuizdoMYmg6XAmH/Samudhra?node-id=0-1)
 Reviewed 2026-11-21. Everything lives on one page (`0:1 — Page 1`).

@@ -84,3 +84,19 @@ export function list(content: Record<string, unknown>, key: string): Record<stri
     (item): item is Record<string, string> => typeof item === 'object' && item !== null,
   );
 }
+
+/**
+ * Location names for the reserve / order picker.
+ *
+ * They live on the home page's contact section, which is where they are shown
+ * and edited; the picker reads them from there rather than duplicating the
+ * list, so the client only maintains one copy.
+ */
+export async function getLocationNames(): Promise<string[]> {
+  const page = await getPage('home');
+  const contact = page?.sections.find((s) => s.kind === 'contactCta');
+  if (!contact) return [];
+  return list(contact.content, 'locations')
+    .map((l) => l.name)
+    .filter((name): name is string => Boolean(name));
+}

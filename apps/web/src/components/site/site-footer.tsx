@@ -1,65 +1,50 @@
+/* eslint-disable @next/next/no-img-element -- CMS images come from arbitrary hosts */
 import Link from 'next/link';
 import { parseLinkLines } from '@samudra/shared';
-import { Container, Wordmark } from './primitives';
 import { list, text } from '@/lib/content';
 
-/** The footer: wordmark, tagline, link columns and the legal strip. */
+/** Footer: wordmark, link columns and the legal strip. */
 export function SiteFooter({ content }: { content: Record<string, unknown> }) {
   const columns = list(content, 'columns');
-  const tagline = text(content, 'tagline');
-  const legal = text(content, 'legal');
-  const note = text(content, 'note');
+  const logo = text(content, 'logo', '/images/samudhra.png');
+  const mark = text(content, 'markImage');
 
   return (
-    <footer className="border-t border-heath-14 bg-serenade">
-      <Container className="py-16">
-        <div className="grid gap-10 lg:grid-cols-[18rem_1fr]">
-          <div>
-            <Wordmark className="text-3xl" />
-            {tagline ? (
-              <p className="mt-4 max-w-[18rem] text-link text-heath-75">{tagline}</p>
-            ) : null}
+    <footer className="sf">
+      <div className="sf-in">
+        <div className="sf-g">
+          <div className="sf-b">
+            <img src={logo} alt="Samudhra" width={1400} height={230} loading="lazy" />
+            <p className="sf-tag">{text(content, 'tagline')}</p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
-            {columns.map((column, i) => {
-              const links = parseLinkLines(column.links);
-              return (
-                <div key={`${column.heading}-${i}`}>
-                  <h2 className="u-eyebrow text-zest">{column.heading}</h2>
-                  <ul className="mt-4 space-y-2.5">
-                    {links.map((link) => (
-                      <li key={`${link.label}-${link.href}`}>
-                        <Link
-                          href={link.href || '#'}
-                          className="text-link text-heath transition-colors hover:text-zest"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+          {columns.map((column, i) => (
+            <div key={`${column.heading}-${i}`}>
+              <p className="sf-h">{column.heading}</p>
+              <div className="sf-l">
+                {parseLinkLines(column.links).map((link) => (
+                  <Link key={`${link.label}-${link.href}`} href={link.href || '#'}>
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-heath-14 pt-6">
-          <a href="#top" className="u-eyebrow text-heath underline underline-offset-4">
-            Back to top
-          </a>
-          {legal ? <span className="u-eyebrow text-heath-75">{legal}</span> : null}
-          {note ? <span className="u-eyebrow text-heath-35">{note}</span> : null}
-
-          <span
-            aria-hidden
-            className="ml-auto bg-[linear-gradient(95deg,var(--color-zest),var(--color-creole))] bg-clip-text text-3xl font-extrabold text-transparent"
-          >
-            S
-          </span>
+        <div className="sf-bot">
+          <p className="sf-c">
+            <a href="#top">Back to top</a>
+            <span>{text(content, 'legal')}</span>
+            <span>{text(content, 'note')}</span>
+          </p>
+          {mark ? (
+            <a href="#top" aria-label="Samudhra, home">
+              <img className="sf-mk" src={mark} alt="" width={351} height={392} loading="lazy" />
+            </a>
+          ) : null}
         </div>
-      </Container>
+      </div>
     </footer>
   );
 }

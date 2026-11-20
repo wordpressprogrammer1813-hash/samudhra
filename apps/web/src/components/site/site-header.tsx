@@ -1,131 +1,163 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+/* eslint-disable @next/next/no-img-element -- CMS images come from arbitrary hosts */
 import Link from 'next/link';
-import { X } from 'lucide-react';
-import { Container, PillLink, Wordmark } from './primitives';
-import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
+import { parseLines, parseLinkLines } from '@samudra/shared';
+import { list, text } from '@/lib/content';
 
-export interface HeaderContent {
-  menuLabel: string;
-  actions: { label: string; href: string; style?: string }[];
-  navLinks: { label: string; href: string }[];
+/**
+ * A button or a link, depending on what the client chose in the panel.
+ * `data-act` / `data-enq` are the hooks <SiteBehaviour /> listens for, which
+ * lets every section stay a plain server component.
+ */
+export function ActionButton({
+  action,
+  className,
+  children,
+}: {
+  action: Record<string, string>;
+  className: string;
+  children?: ReactNode;
+}) {
+  const label = children ?? action.label;
+  const kind = action.action || 'link';
+
+  if (kind === 'reserve' || kind === 'order') {
+    return (
+      <button type="button" className={className} data-act={kind}>
+        {label}
+      </button>
+    );
+  }
+  if (kind === 'enquiry') {
+    return (
+      <button type="button" className={className} data-enq="">
+        {label}
+      </button>
+    );
+  }
+  return (
+    <Link className={className} href={action.href || '#'}>
+      {label}
+    </Link>
+  );
 }
 
 /**
- * The bar at the top of every page: menu trigger on the left, wordmark in the
- * middle, call-to-action buttons on the right — plus the full-screen overlay
- * the menu trigger opens.
+ * Header and the slide-in menu panel, as plain markup matching the approved
+ * homepage. Opening and closing is handled by <SiteBehaviour />, which toggles
+ * the `on` class on #ov exactly as the original script did.
  */
-export function SiteHeader({ content }: { content: HeaderContent }) {
-  const [open, setOpen] = useState(false);
-
-  // Lock the page behind the overlay while it is open.
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+export function SiteHeader({ content }: { content: Record<string, unknown> }) {
+  const logo = text(content, 'logo', '/images/samudhra.png');
+  const actions = list(content, 'actions');
+  const groups = list(content, 'navGroups');
+  const addressLines = parseLines(content.panelAddress);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-heath-14 bg-serenade/95 backdrop-blur">
-      <Container className="flex h-[5.75rem] items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-expanded={open}
-          aria-controls="site-menu"
-          className="u-eyebrow flex items-center gap-3 text-heath transition-opacity hover:opacity-70"
-        >
-          <span aria-hidden className="flex w-6 flex-col gap-1.5">
-            <span className="h-px w-6 bg-heath" />
-            <span className="h-px w-4 bg-heath" />
-          </span>
-          {content.menuLabel || 'Menu'}
-        </button>
-
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2" aria-label="Samudhra, home">
-          <Wordmark className="text-3xl sm:text-4xl" />
-        </Link>
-
-        <div className="hidden items-center gap-3 md:flex">
-          {content.actions.map((action) => (
-            <PillLink
-              key={`${action.label}-${action.href}`}
-              href={action.href}
-              variant={action.style === 'solid' ? 'solid' : 'outline'}
-            >
-              {action.label}
-            </PillLink>
-          ))}
-        </div>
-      </Container>
-
-      {/* Full-screen navigation overlay */}
-      <div id="site-menu" hidden={!open} className="fixed inset-0 z-50 bg-serenade">
-        <Container className="flex h-[5.75rem] items-center justify-between">
-          <span className="u-eyebrow text-heath-75">Menu</span>
+    <>
+      <header className="nav">
+        <div className="nav-in">
           <button
             type="button"
-            onClick={() => setOpen(false)}
-            className="u-eyebrow flex items-center gap-2 text-heath transition-opacity hover:opacity-70"
+            className="burger"
+            aria-expanded="false"
+            aria-controls="ov"
+            id="openMenu"
           >
-            Close
-            <X className="size-4" aria-hidden />
+            <span className="bi" aria-hidden="true">
+              <i />
+              <i />
+            </span>
+            <span className="burger-t">{text(content, 'menuLabel', 'Menu')}</span>
+            <span className="sr">Open site menu</span>
           </button>
-        </Container>
 
-        {/* Any click in here closes the overlay, which also covers navigation. */}
-        <div onClickCapture={() => setOpen(false)}>
-          <Container>
-            <nav aria-label="Site">
-              <ul className="divide-y divide-heath-14 border-y border-heath-14">
-                {content.navLinks.map((link) => (
-                  <li key={`${link.label}-${link.href}`}>
-                    <Link
-                      href={link.href || '#'}
-                      className={cn(
-                        'group flex items-baseline justify-between py-5 transition-colors',
-                        'text-h3 text-heath hover:text-zest',
-                      )}
-                    >
-                      {link.label}
-                      <span
-                        aria-hidden
-                        className="u-eyebrow opacity-0 transition-opacity group-hover:opacity-100"
-                      >
-                        View
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          <Link className="logo" href="/" aria-label="Samudhra, home">
+            <img src={logo} alt="Samudhra" width={1400} height={230} />
+          </Link>
 
-            <div className="mt-10 flex flex-wrap gap-3">
-              {content.actions.map((action) => (
-                <PillLink
-                  key={`overlay-${action.label}`}
-                  href={action.href}
-                  variant={action.style === 'solid' ? 'solid' : 'outline'}
+          <div className="nav-r">
+            {actions.map((action) => (
+              <ActionButton
+                key={`${action.label}-${action.action}`}
+                action={action}
+                className={`ob${action.style === 'solid' ? ' ob-f' : ''}`}
+              />
+            ))}
+          </div>
+        </div>
+      </header>
+
+      <div
+        className="ov"
+        id="ov"
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site menu"
+      >
+        <button
+          type="button"
+          className="sn-scrim"
+          tabIndex={-1}
+          aria-label="Close menu"
+          data-mclose=""
+        />
+
+        <div className="sn-panel">
+          <div className="sn-head">
+            <Link href="/" data-mclose="">
+              <img className="sn-logo" src={logo} alt="Samudhra" width={1400} height={230} />
+            </Link>
+            <button type="button" className="ov-x" aria-label="Close menu" data-mclose="">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                aria-hidden="true"
+              >
+                <path d="M5 5l14 14M19 5L5 19" />
+              </svg>
+            </button>
+          </div>
+
+          <nav className="sn-nav" aria-label="Site">
+            {groups.flatMap((group, i) => [
+              <p className="sn-g" key={`h-${i}`}>
+                {group.heading}
+              </p>,
+              ...parseLinkLines(group.links).map((link) => (
+                <Link
+                  key={`l-${i}-${link.label}`}
+                  className="sn-s"
+                  href={link.href || '#'}
+                  data-mclose=""
                 >
-                  {action.label}
-                </PillLink>
+                  {link.label}
+                </Link>
+              )),
+            ])}
+          </nav>
+
+          <div className="sn-cta">
+            {actions.map((action) => (
+              <ActionButton key={`panel-${action.label}`} action={action} className="sn-l" />
+            ))}
+          </div>
+
+          {addressLines.length > 0 ? (
+            <p className="sn-addr">
+              {addressLines.map((line, i) => (
+                <span key={line}>
+                  {i > 0 ? <br /> : null}
+                  <span className="ph">{line}</span>
+                </span>
               ))}
-            </div>
-          </Container>
+            </p>
+          ) : null}
         </div>
       </div>
-    </header>
+    </>
   );
 }

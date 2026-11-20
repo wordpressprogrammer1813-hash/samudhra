@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents
   cacheComponents: false,
 
+  // Keep the floating Next.js badge off the page, including local production
+  // runs, so what we look at is what a visitor sees.
+  devIndicators: false,
+
   turbopack: {
     rules: {
       '*.css': {
