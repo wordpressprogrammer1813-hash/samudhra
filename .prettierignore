@@ -4,7 +4,3 @@ dist/
 coverage/
 package-lock.json
 *.md
-supabase/migrations/
-
-# Ported verbatim from the approved homepage; keep it byte-comparable.
-apps/web/src/styles/site.css

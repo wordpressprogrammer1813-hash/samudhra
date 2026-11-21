@@ -2,7 +2,7 @@
   "name": "samudra",
   "version": "0.1.0",
   "private": true,
-  "description": "Samudra - Next.js web app with Node/Express API and Supabase (superadmin panel)",
+  "description": "Samudra - Next.js web app with a Node/Express API",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -22,12 +22,9 @@
     "start:api": "npm run start -w @samudra/api",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "clean": "rimraf \"apps/*/.next\" \"apps/*/dist\" \"packages/*/dist\" \"**/*.tsbuildinfo\"",
-    "db:push": "supabase db push",
-    "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --linked --schema public > packages/shared/src/database.types.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "clean": "rimraf \"apps/*/.next\" \"apps/*/dist\" \"packages/*/dist\" \"**/*.tsbuildinfo\""
   },
   "devDependencies": {
     "concurrently": "^10.0.7",

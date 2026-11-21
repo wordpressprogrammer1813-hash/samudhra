@@ -2,7 +2,7 @@
   "name": "@samudra/shared",
   "version": "0.1.0",
   "private": true,
-  "description": "Shared types, roles and zod schemas for Samudra web + api",
+  "description": "Types shared by the Samudra web app and API",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,9 +21,6 @@
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clean": "rimraf dist *.tsbuildinfo"
-  },
-  "dependencies": {
-    "zod": "^4.6.7"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

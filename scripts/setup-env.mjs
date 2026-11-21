@@ -2,7 +2,7 @@
 /**
  * Creates the two env files the apps actually read, from .env.example:
  *
- *   .env               -> apps/api  (Node reads it via --env-file-if-exists)
+ *   .env                -> apps/api (Node reads it via --env-file-if-exists)
  *   apps/web/.env.local -> apps/web (Next.js only reads env files in its own dir)
  *
  * Existing files are never overwritten.
@@ -34,5 +34,5 @@ for (const target of targets) {
 }
 
 if (created > 0) {
-  console.log('\nNow fill in your Supabase URL and keys in both files, then run: npm run dev');
+  console.log('\nThe defaults work for local development. Run: npm run dev');
 }

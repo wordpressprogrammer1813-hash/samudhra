@@ -1,70 +1,21 @@
-# Samudhra
+# Samudra
 
-Website for Samudhra, a contemporary Indian restaurant, plus the admin panel
-its owner uses to edit the content of every page without touching code.
+A Next.js web app and a separate Node/Express API in one repository, with a
+small shared package so the two cannot drift apart.
 
-Next.js front end, a separate Node/Express API, Supabase for auth and Postgres.
-
-The home page is a faithful port of the approved single-file build: its
-stylesheet lives verbatim in `apps/web/src/styles/site.css`, the React sections
-emit the same markup, and every string and photo comes from the database so the
-owner can change them. See [docs/DESIGN.md](docs/DESIGN.md).
+This is the starting point — no features yet.
 
 ```
-Samudhra/
+Samudra/
 ├─ apps/
-│  ├─ web/          Next.js 16 (App Router, Tailwind 4) — public site + /admin
-│  └─ api/          Express 5 + TS — REST API, service-role Supabase client
+│  ├─ web/          Next.js 16 (App Router, TypeScript, Tailwind 4)
+│  └─ api/          Express 5 + TypeScript
 ├─ packages/
-│  └─ shared/       Roles, API types, zod schemas, and the content model
-├─ supabase/
-│  └─ migrations/   Schema, RLS policies, triggers, seeded page content
-├─ scripts/         setup-env.mjs
-└─ docs/            ARCHITECTURE.md, DESIGN.md
+│  └─ shared/       Types used by both apps
+└─ scripts/         setup-env.mjs
 ```
 
-## How content works
-
-Nothing on the public site is hardcoded. A **page** owns an ordered list of
-**sections**; each section has a `kind` (which React component draws it) and a
-JSON `content` blob. The fields of every kind are declared once, in
-[`packages/shared/src/content.ts`](packages/shared/src/content.ts), and that one
-declaration produces three things:
-
-- the form the owner sees in the admin panel,
-- the zod schema the API validates a save against,
-- the typed content the React section component receives.
-
-Adding a field is a one-line change there. The header and footer are sections
-too — they live on a special `global` page — so the navigation and footer links
-are editable from the same place as everything else.
-
-| Page | Slug | State |
-| --- | --- | --- |
-| Header & footer | `global` | Built — also holds the wording of both dialogs |
-| Home | `home` | Built — 7 sections |
-| Menu | `menu` | Page exists, sections not built yet |
-| Dining & Lounge | `dining` | Page exists, sections not built yet |
-| Our Story | `about` | Page exists, sections not built yet |
-| Catering & Events | `catering` | Page exists, sections not built yet |
-| Contact | `contact` | Page exists, sections not built yet |
-
-## Who can sign in
-
-One role matters: **super admin**. The panel exists for the person who edits the
-site, so there is no public sign-up, no user list and no second dashboard. The
-`editor` and `admin` values stay in the Postgres enum for when staff accounts
-are wanted later, but nothing grants them access today.
-
-Access is enforced in three places, so a gap in one does not open a hole:
-
-1. **Postgres RLS** — the real boundary. Visitors read published pages only; a
-   user can never raise their own role.
-2. **Express API** — `requireSuperAdmin` on every content route.
-3. **Next.js** — a redirect in `src/proxy.ts` plus `requireRole('superadmin')`
-   in every admin page.
-
-## Setup
+## Getting started
 
 ```bash
 npm install
@@ -75,36 +26,17 @@ node scripts/setup-env.mjs
 ```
 
 That writes `.env` (the API reads it) and `apps/web/.env.local` (Next.js reads
-it). Both already hold the project URL and anon key for the `Samudhra` Supabase
-project (`tqionuvoxgaqxoosbjty`). **One value is still missing:**
-
-- `SUPABASE_SERVICE_ROLE_KEY` — Supabase dashboard → Project settings → API
-  keys. Put it in `.env` only, never in the web app. Until it is set the admin
-  panel cannot load and `/api/health/ready` reports `degraded`.
-
-The database schema and the seeded home-page content are already applied to that
-project. For a fresh project: `supabase link --project-ref …` then
-`npm run db:push`, or run the files in `supabase/migrations/` in order in the
-SQL editor.
-
-### Your login
-
-There is no sign-up page. Create the account once in the Supabase dashboard
-(Authentication → Users → Add user, with a password), then make it super admin:
-
-```sql
-update public.profiles set role = 'superadmin' where email = 'you@example.com';
-```
-
-## Run
+it) from `.env.example`. The defaults work for local development as they are.
 
 ```bash
 npm run dev
 ```
 
-- site → http://localhost:3000
-- API → http://localhost:4000/api
-- admin → http://localhost:3000/admin
+- web → http://localhost:3000
+- api → http://localhost:4000/api
+
+The home page calls `GET /api/health`, so it tells you straight away whether
+the two are talking to each other.
 
 ## Scripts
 
@@ -114,35 +46,23 @@ npm run dev
 | `npm run build` | Builds shared, then api, then web |
 | `npm run typecheck` | `tsc --noEmit` across every workspace |
 | `npm run lint` | ESLint |
-| `npm run format` | Prettier over the repo |
-| `npm run db:push` | Applies `supabase/migrations` to the linked project |
-| `npm run db:types` | Regenerates `packages/shared/src/database.types.ts` |
+| `npm run format` | Prettier over the repository |
 
-## API
+## How it fits together
 
-All routes are under `/api`. Everything except `/api/health` needs
-`Authorization: Bearer <supabase access token>`; everything under
-`/api/admin` needs the super admin role.
+- **`apps/web`** renders the site. Server components fetch from the API.
+- **`apps/api`** is a plain Express app: helmet, CORS limited to
+  `CORS_ORIGINS`, rate limiting, request logging, and one error handler that
+  turns any thrown error into a JSON body.
+- **`packages/shared`** holds the response shape both sides use:
+  `{ ok: true, data }` or `{ ok: false, error: { code, message } }`. It
+  compiles to `dist/` and both apps consume the build; `npm run dev` watches
+  it, so edits flow through while you work.
 
-| Method | Route |
-| --- | --- |
-| GET | `/api/health`, `/api/health/ready` |
-| GET, PATCH | `/api/me` |
-| GET | `/api/admin/content/pages` |
-| GET, PATCH | `/api/admin/content/pages/:slug` |
-| PATCH | `/api/admin/content/pages/:slug/sections/:key` |
-| PUT | `/api/admin/content/pages/:slug/order` |
-| GET | `/api/admin/settings`, `/api/admin/settings/:key` |
-| PUT | `/api/admin/settings/:key` |
+## Conventions
 
-Every response is `{ ok: true, data }` or `{ ok: false, error: { code, message } }`.
-
-## Still to do
-
-- The other six pages' sections (menu, dining, about, catering, contact).
-- Real photography. Every image field is empty, so sections show a placeholder.
-- Image uploads to Supabase Storage — today an image field takes a URL.
-- The real wordmark as an SVG; it is currently set in Montserrat with the
-  brand gradient.
-- The `[bracketed]` copy in the design: addresses, phone numbers, opening
-  hours, chef names.
+- TypeScript everywhere, `strict` on.
+- Prettier settles formatting (single quotes, 100 columns); ESLint is for
+  correctness, not style.
+- Environment variables are validated at boot in `apps/api/src/env.ts`, so a
+  missing value fails on start rather than on the first request.
