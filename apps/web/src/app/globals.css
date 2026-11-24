@@ -1,25 +1,25 @@
 @import 'tailwindcss';
 
 /*
- * Base tokens only. Design tokens for the real site get added here when we
- * start building it, so nothing has to hardcode a colour.
+ * Samudhra design tokens, from design.md (Figma + the approved
+ * samudhra-homepage-final.html reference). Every colour/easing a component
+ * needs lives here so nothing downstream hardcodes a hex or a curve.
  */
 :root {
-  --background: oklch(0.99 0.002 240);
-  --foreground: oklch(0.21 0.01 240);
-  --muted: oklch(0.96 0.004 240);
-  --muted-foreground: oklch(0.52 0.012 240);
-  --border: oklch(0.91 0.006 240);
-}
+  --background: #fff8ed; /* Serenade */
+  --foreground: #4d0f10; /* Heath */
+  --muted: #fff8ed;
+  --muted-foreground: rgba(77, 15, 16, 0.78); /* Heath 78% */
+  --border: rgba(77, 15, 16, 0.18); /* Heath 20% */
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --background: oklch(0.17 0.012 240);
-    --foreground: oklch(0.96 0.004 240);
-    --muted: oklch(0.26 0.014 240);
-    --muted-foreground: oklch(0.69 0.012 240);
-    --border: oklch(0.3 0.014 240);
-  }
+  --color-serenade: #fff8ed;
+  --color-heath: #4d0f10;
+  --color-creole: #1d0506;
+  --color-zest: #db851d;
+  --color-korma: #9a5a0f;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -28,6 +28,17 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+
+  --color-serenade: var(--color-serenade);
+  --color-heath: var(--color-heath);
+  --color-creole: var(--color-creole);
+  --color-zest: var(--color-zest);
+  --color-korma: var(--color-korma);
+
+  --font-sans: var(--font-montserrat), 'Helvetica Neue', Arial, sans-serif;
+
+  --ease-samudhra: var(--ease);
+  --ease-samudhra-out: var(--ease-out);
 }
 
 @layer base {
@@ -35,5 +46,124 @@
     background-color: var(--background);
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
+  }
+
+  button:not(:disabled),
+  [role='button'] {
+    cursor: pointer;
+  }
+}
+
+/* Shared entrance keyframes for modals/popovers across the admin panel. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero entrance + ambient keyframes, from the approved reference build. */
+@property --mx {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+@property --my {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+@keyframes up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes letter {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* Registered through @theme so Tailwind generates the animate-frame-cw /
+   animate-frame-ccw utilities and bundles the keyframe. Named frame-spin (not
+   "spin") to avoid colliding with Tailwind's built-in spin keyframe. */
+@theme {
+  --animate-frame-cw: frame-spin 24s linear infinite;
+  --animate-frame-ccw: frame-spin 28s linear infinite reverse;
+}
+
+@keyframes frame-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hero spotlight entrance: fades in to its resting .5 opacity, not to 1. */
+@keyframes spot-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
+@keyframes wander {
+  0% {
+    --mx: 28%;
+    --my: 30%;
+  }
+  35% {
+    --mx: 72%;
+    --my: 26%;
+  }
+  70% {
+    --mx: 78%;
+    --my: 72%;
+  }
+  100% {
+    --mx: 24%;
+    --my: 68%;
+  }
+}
+
+/* Respect reduced-motion sitewide, not just per-component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
