@@ -1,8 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { DIAMOND_PATTERN_URL } from '@/lib/constants';
 import type { HeroAction } from '@/lib/pages';
+
+// The reference HTML's own embedded glint tile (dense 69x110.5px diamond
+// lattice) — distinct from the site-wide DIAMOND_PATTERN_URL watermark,
+// which tiles far larger and reads as too sparse inside the hero's small
+// spotlight/sweep masks.
+const HERO_GLINT_URL = '/images/hero-glint.png';
 
 export function HeroSection({
   eyebrow,
@@ -66,12 +71,14 @@ export function HeroSection({
           location gate closes so it isn't wasted underneath that overlay. */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 bg-[length:1100px] mix-blend-screen motion-reduce:animate-none sm:bg-[length:1920px] ${
+        className={`pointer-events-none absolute inset-0 mix-blend-screen motion-reduce:animate-none ${
           gateClosed ? 'animate-sweep' : ''
         }`}
         style={
           {
-            backgroundImage: `url(${DIAMOND_PATTERN_URL})`,
+            backgroundImage: `url(${HERO_GLINT_URL})`,
+            backgroundSize: '69px 110.5px',
+            backgroundPosition: '0 0',
             backgroundRepeat: 'repeat',
             WebkitMaskImage: 'linear-gradient(105deg, transparent 40%, #000 50%, transparent 60%)',
             maskImage: 'linear-gradient(105deg, transparent 40%, #000 50%, transparent 60%)',
@@ -86,10 +93,12 @@ export function HeroSection({
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[length:1100px] mix-blend-screen sm:bg-[length:1920px]"
+        className="pointer-events-none absolute inset-0 mix-blend-screen"
         style={
           {
-            backgroundImage: `url(${DIAMOND_PATTERN_URL})`,
+            backgroundImage: `url(${HERO_GLINT_URL})`,
+            backgroundSize: '69px 110.5px',
+            backgroundPosition: '0 0',
             backgroundRepeat: 'repeat',
             WebkitMaskImage:
               'radial-gradient(circle 240px at var(--mx) var(--my), #000 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
