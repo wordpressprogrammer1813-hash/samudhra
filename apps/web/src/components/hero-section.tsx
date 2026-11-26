@@ -55,6 +55,24 @@ export function HeroSection({
         }}
       />
 
+      {/* One-time diagonal left-to-right sweep reveal on load. */}
+      <div
+        aria-hidden
+        className="animate-sweep pointer-events-none absolute inset-0 bg-[length:1100px] mix-blend-screen motion-reduce:animate-none sm:bg-[length:1920px]"
+        style={
+          {
+            backgroundImage: `url(${DIAMOND_PATTERN_URL})`,
+            backgroundRepeat: 'repeat',
+            WebkitMaskImage: 'linear-gradient(105deg, transparent 40%, #000 50%, transparent 60%)',
+            maskImage: 'linear-gradient(105deg, transparent 40%, #000 50%, transparent 60%)',
+            WebkitMaskSize: '300% 100%',
+            maskSize: '300% 100%',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+          } as CSSProperties
+        }
+      />
+
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[length:1100px] sm:bg-[length:1920px]"
