@@ -156,6 +156,16 @@
   }
 }
 
+/* Location gate: pin to the real viewport height on desktop only (100vh as
+   a fallback, 100dvh overriding it in browsers that support the unit).
+   Mobile keeps the plain `inset-0` sizing. */
+@media (min-width: 1024px) {
+  .location-gate-dialog {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
 /* Respect reduced-motion sitewide, not just per-component. */
 @media (prefers-reduced-motion: reduce) {
   *,

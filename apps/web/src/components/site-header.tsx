@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { sanitizeHref } from '@/lib/safe-url';
+import { lockBodyScroll, unlockBodyScroll } from '@/lib/scroll-lock';
 import type { HeaderButton } from '@/lib/settings';
 
 export interface NavGroup {
@@ -42,7 +43,7 @@ export function SiteHeader({
 
     const triggerButton = openButtonRef.current;
     closeButtonRef.current?.focus();
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
@@ -50,7 +51,7 @@ export function SiteHeader({
     document.addEventListener('keydown', onKeyDown);
 
     return () => {
-      document.body.style.overflow = '';
+      unlockBodyScroll();
       document.removeEventListener('keydown', onKeyDown);
       triggerButton?.focus();
     };

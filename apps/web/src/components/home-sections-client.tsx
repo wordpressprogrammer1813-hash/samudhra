@@ -13,6 +13,7 @@ import {
 } from '@/components/location-gate';
 import type { LocationGateSocialLinks } from '@/lib/settings';
 import { OurStory, type OurStoryProps } from '@/components/our-story';
+import { lockBodyScroll, unlockBodyScroll } from '@/lib/scroll-lock';
 import { WeekendThali, type WeekendThaliProps } from '@/components/weekend-thali';
 
 type WeekendThaliData = Omit<WeekendThaliProps, 'onReserveClick'>;
@@ -69,14 +70,9 @@ export function HomeSectionsClient({
   }, []);
 
   useEffect(() => {
-    if (isGateOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    if (!isGateOpen) return;
+    lockBodyScroll();
+    return () => unlockBodyScroll();
   }, [isGateOpen]);
 
   function handleSelectLocation(location: string, index = 0) {

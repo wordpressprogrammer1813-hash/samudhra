@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
+import { lockBodyScroll, unlockBodyScroll } from '@/lib/scroll-lock';
 
 export interface EventInquiryModalProps {
   isOpen: boolean;
@@ -22,10 +23,10 @@ export function EventInquiryModal({ isOpen, onClose }: EventInquiryModalProps) {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
+      unlockBodyScroll();
     };
   }, [isOpen, onClose]);
 

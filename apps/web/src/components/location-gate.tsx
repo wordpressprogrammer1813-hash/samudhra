@@ -120,7 +120,7 @@ export function LocationGate({
       aria-modal="true"
       aria-label="Welcome to Samudhra - Choose Location"
       onTransitionEnd={handleTransitionEnd}
-      className={`fixed inset-0 z-60 flex flex-col justify-between overflow-y-auto bg-serenade text-heath transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none ${isOpen
+      className={`location-gate-dialog fixed inset-0 z-60 flex flex-col justify-between overflow-y-auto bg-serenade text-heath transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none ${isOpen
         ? 'opacity-100 scale-100 pointer-events-auto'
         : 'opacity-0 scale-105 pointer-events-none'
         }`}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { lockBodyScroll, unlockBodyScroll } from '@/lib/scroll-lock';
 
 export type ActionIntent = 'reserve' | 'order';
 
@@ -46,10 +47,10 @@ export function ActionModal({ isOpen, onClose, intent, initialLocation = null }:
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
+      unlockBodyScroll();
     };
   }, [isOpen, onClose]);
 
