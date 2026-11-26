@@ -33,24 +33,25 @@ export function OurStory({
       {/* Background Soft Ambience Glow */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_65%_at_35%_50%,rgba(255,248,237,0.16),transparent_100%)]" />
 
+      {/* Rotating Sacred Mandala SVG — anchored to the section's own top-left
+          corner, independent of the image card, not tucked behind it. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-10 -left-10 size-[460px] select-none sm:-top-14 sm:-left-14 sm:size-[540px] xl:-top-16 xl:-left-16 xl:size-[600px]"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/story-mandala.svg"
+          alt=""
+          className="size-full animate-[spin_55s_linear_infinite] opacity-40 drop-shadow-sm motion-reduce:animate-none"
+        />
+      </div>
+
       <div className="relative z-10 mx-auto max-w-[1360px] px-6 sm:px-10 lg:px-14">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-14 xl:gap-20">
-          {/* ================= LEFT COLUMN: Image Card with Rotating Mandala Behind ================= */}
+          {/* ================= LEFT COLUMN: Image Card ================= */}
           <div className="relative flex justify-center lg:col-span-6 lg:justify-start">
             <div className="relative w-full max-w-[420px] sm:max-w-[460px] xl:max-w-[490px]">
-              {/* Rotating Sacred Mandala SVG (Positioned behind top-left of image) */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-16 -left-16 size-[460px] sm:-top-20 sm:-left-20 sm:size-[540px] xl:-top-24 xl:-left-24 xl:size-[600px] select-none"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/story-mandala.svg"
-                  alt=""
-                  className="size-full animate-[spin_55s_linear_infinite] opacity-40 drop-shadow-sm motion-reduce:animate-none"
-                />
-              </div>
-
               {/* Main Photo Card (Rounded Corners with Rich Elevation) */}
               <Reveal variant="clip">
                 <div className="group relative z-10 aspect-[3.3/4] w-full overflow-hidden rounded-[24px] sm:rounded-[28px] bg-white p-1.5 shadow-[0_24px_50px_-15px_rgba(77,15,16,0.45)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1">
