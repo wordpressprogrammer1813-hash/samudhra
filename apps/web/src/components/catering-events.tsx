@@ -130,10 +130,10 @@ export function CateringEvents({
               <Reveal delay={80} className="flex w-full">
                 <a
                   href={card1.href}
-                  className="group relative flex w-full flex-col justify-between gap-6 rounded-[28px] bg-serenade px-7 pt-24 pb-7 text-heath no-underline shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 sm:pt-28"
+                  className="group relative flex w-full flex-col justify-between gap-6 rounded-[28px] bg-serenade px-7 pt-24 pb-7 text-heath no-underline shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 sm:pt-28 lg:pt-[138px] xl:pt-[160px]"
                 >
               {/* Overlapping Top Circular Image */}
-              <div className="absolute -top-14 left-1/2 aspect-square w-[150px] -translate-x-1/2 overflow-hidden rounded-full shadow-[0_0_0_6px_#FFF8ED,0_0_0_9px_#4D0F10,0_20px_35px_-10px_rgba(0,0,0,0.6)] transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1/2 group-hover:scale-[1.04] group-hover:rotate-[-6deg] sm:-top-16 sm:w-[165px]">
+              <div className="absolute -top-14 left-1/2 aspect-square w-[150px] -translate-x-1/2 overflow-hidden rounded-full shadow-[0_0_0_6px_#FFF8ED,0_0_0_9px_#4D0F10,0_20px_35px_-10px_rgba(0,0,0,0.6)] transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1/2 group-hover:scale-[1.04] group-hover:rotate-[-6deg] sm:-top-16 sm:w-[165px] lg:-top-20 lg:w-[210px] xl:-top-24 xl:w-[250px]">
                 <ImageWithFallback
                   src={card1.image}
                   alt={card1.titleLine1}
@@ -181,10 +181,10 @@ export function CateringEvents({
                   <button
                     type="button"
                     onClick={onInquiryClick}
-                    className="group relative flex w-full flex-col justify-between gap-6 rounded-[28px] bg-serenade px-7 pt-24 pb-7 text-left text-heath no-underline shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 sm:pt-28"
+                    className="group relative flex w-full flex-col justify-between gap-6 rounded-[28px] bg-serenade px-7 pt-24 pb-7 text-left text-heath no-underline shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 sm:pt-28 lg:pt-[138px] xl:pt-[160px]"
                   >
                 {/* Overlapping Top Circular Image */}
-                <div className="absolute -top-14 left-1/2 aspect-square w-[150px] -translate-x-1/2 overflow-hidden rounded-full shadow-[0_0_0_6px_#FFF8ED,0_0_0_9px_#4D0F10,0_20px_35px_-10px_rgba(0,0,0,0.6)] transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1/2 group-hover:scale-[1.04] group-hover:rotate-[-6deg] sm:-top-16 sm:w-[165px]">
+                <div className="absolute -top-14 left-1/2 aspect-square w-[150px] -translate-x-1/2 overflow-hidden rounded-full shadow-[0_0_0_6px_#FFF8ED,0_0_0_9px_#4D0F10,0_20px_35px_-10px_rgba(0,0,0,0.6)] transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1/2 group-hover:scale-[1.04] group-hover:rotate-[-6deg] sm:-top-16 sm:w-[165px] lg:-top-20 lg:w-[210px] xl:-top-24 xl:w-[250px]">
                   <ImageWithFallback
                     src={card2.image}
                     alt={card2.titleLine1}
@@ -225,10 +225,10 @@ export function CateringEvents({
             ) : (
               <a
                 href={card2.href}
-                className="group relative flex flex-col justify-between gap-6 rounded-[28px] bg-serenade px-7 pt-24 pb-7 text-heath no-underline shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 sm:pt-28"
+                className="group relative flex flex-col justify-between gap-6 rounded-[28px] bg-serenade px-7 pt-24 pb-7 text-heath no-underline shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 sm:pt-28 lg:pt-[138px] xl:pt-[160px]"
               >
                 {/* Overlapping Top Circular Image */}
-                <div className="absolute -top-14 left-1/2 aspect-square w-[150px] -translate-x-1/2 overflow-hidden rounded-full shadow-[0_0_0_6px_#FFF8ED,0_0_0_9px_#4D0F10,0_20px_35px_-10px_rgba(0,0,0,0.6)] transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1/2 group-hover:scale-[1.04] group-hover:rotate-[-6deg] sm:-top-16 sm:w-[165px]">
+                <div className="absolute -top-14 left-1/2 aspect-square w-[150px] -translate-x-1/2 overflow-hidden rounded-full shadow-[0_0_0_6px_#FFF8ED,0_0_0_9px_#4D0F10,0_20px_35px_-10px_rgba(0,0,0,0.6)] transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1/2 group-hover:scale-[1.04] group-hover:rotate-[-6deg] sm:-top-16 sm:w-[165px] lg:-top-20 lg:w-[210px] xl:-top-24 xl:w-[250px]">
                   <ImageWithFallback
                     src={card2.image}
                     alt={card2.titleLine1}
