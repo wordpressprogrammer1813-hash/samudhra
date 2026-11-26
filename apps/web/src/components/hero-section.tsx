@@ -1,13 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { HERO_GLINT_SIZE, HERO_GLINT_URL } from '@/lib/constants';
 import type { HeroAction } from '@/lib/pages';
-
-// The reference HTML's own embedded glint tile (dense 69x110.5px diamond
-// lattice) — distinct from the site-wide DIAMOND_PATTERN_URL watermark,
-// which tiles far larger and reads as too sparse inside the hero's small
-// spotlight/sweep masks.
-const HERO_GLINT_URL = '/images/hero-glint.png';
 
 export function HeroSection({
   eyebrow,
@@ -77,7 +72,7 @@ export function HeroSection({
         style={
           {
             backgroundImage: `url(${HERO_GLINT_URL})`,
-            backgroundSize: '69px 110.5px',
+            backgroundSize: HERO_GLINT_SIZE,
             backgroundPosition: '0 0',
             backgroundRepeat: 'repeat',
             WebkitMaskImage: 'linear-gradient(105deg, transparent 40%, #000 50%, transparent 60%)',
@@ -97,7 +92,7 @@ export function HeroSection({
         style={
           {
             backgroundImage: `url(${HERO_GLINT_URL})`,
-            backgroundSize: '69px 110.5px',
+            backgroundSize: HERO_GLINT_SIZE,
             backgroundPosition: '0 0',
             backgroundRepeat: 'repeat',
             WebkitMaskImage:

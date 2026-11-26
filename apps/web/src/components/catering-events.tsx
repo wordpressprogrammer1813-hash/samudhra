@@ -3,6 +3,7 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import { ImageWithFallback } from '@/components/image-with-fallback';
 import { Reveal, ScrollParallax } from '@/components/scroll-reveal';
+import { HERO_GLINT_SIZE, HERO_GLINT_URL } from '@/lib/constants';
 
 export interface CateringEventsProps {
   eyebrow?: string;
@@ -75,14 +76,18 @@ export function CateringEvents({
       {/* Background Soft Ambience Glow */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(255,248,237,0.06),transparent_100%)]" />
 
-      {/* Interactive Cursor Spotlight Background Pattern (Like Hero Section) */}
+      {/* Interactive Cursor Spotlight Background Pattern (same glint tile and
+          screen blend as the Hero section). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 select-none bg-[length:650px] sm:bg-[length:950px] opacity-45"
+        className="pointer-events-none absolute inset-0 mix-blend-screen select-none"
         style={
           {
-            backgroundImage: "url('/images/diamond-pattern.png')",
+            backgroundImage: `url(${HERO_GLINT_URL})`,
+            backgroundSize: HERO_GLINT_SIZE,
+            backgroundPosition: '0 0',
             backgroundRepeat: 'repeat',
+            opacity: 0.5,
             WebkitMaskImage:
               'radial-gradient(circle 280px at var(--mx, 30%) var(--my, 50%), #000 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
             maskImage:
