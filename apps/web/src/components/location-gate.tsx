@@ -195,10 +195,10 @@ export function LocationGate({
       </header>
 
       {/* ================= CENTER LOCATION CARDS (NEW JERSEY & NEW YORK) ================= */}
-      <main className="relative z-10 flex w-full min-h-0 items-center overflow-y-auto px-5 py-2 sm:px-8">
-        <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:gap-6">
+      <main className="relative z-10 flex w-full min-h-0 overflow-y-auto px-5 py-2 sm:px-8">
+        <div className="mx-auto grid h-full w-full max-w-[1180px] auto-rows-fr grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:gap-6">
           {/* ----- CARD 1 ----- */}
-          <article className="group relative flex min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[630px] flex-col items-center justify-center overflow-hidden rounded-none bg-creole text-center shadow-md transition-shadow duration-500 hover:shadow-xl">
+          <article className="group relative flex flex-col items-center justify-center overflow-hidden rounded-none bg-creole text-center shadow-md transition-shadow duration-500 hover:shadow-xl">
             {/* Background Image */}
             <CardBackground image={cardOne.backgroundImage} />
 
@@ -250,7 +250,7 @@ export function LocationGate({
           </article>
 
           {/* ----- CARD 2 ----- */}
-          <article className="group relative flex min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[630px] flex-col items-center justify-center overflow-hidden rounded-none bg-creole text-center shadow-md transition-shadow duration-500 hover:shadow-xl">
+          <article className="group relative flex flex-col items-center justify-center overflow-hidden rounded-none bg-creole text-center shadow-md transition-shadow duration-500 hover:shadow-xl">
             {/* Background Image */}
             <CardBackground image={cardTwo.backgroundImage} />
 
