@@ -120,7 +120,7 @@ export function LocationGate({
       aria-modal="true"
       aria-label="Welcome to Samudhra - Choose Location"
       onTransitionEnd={handleTransitionEnd}
-      className={`location-gate-dialog fixed inset-0 z-60 flex flex-col justify-between overflow-y-auto bg-serenade text-heath transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none ${isOpen
+      className={`location-gate-dialog fixed inset-0 z-60 grid grid-rows-[auto_1fr_auto] overflow-hidden bg-serenade text-heath transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none ${isOpen
         ? 'opacity-100 scale-100 pointer-events-auto'
         : 'opacity-0 scale-105 pointer-events-none'
         }`}
@@ -195,7 +195,7 @@ export function LocationGate({
       </header>
 
       {/* ================= CENTER LOCATION CARDS (NEW JERSEY & NEW YORK) ================= */}
-      <main className="relative z-10 flex w-full flex-1 items-center px-5 py-2 sm:px-8">
+      <main className="relative z-10 flex w-full min-h-0 items-center overflow-y-auto px-5 py-2 sm:px-8">
         <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:gap-6">
           {/* ----- CARD 1 ----- */}
           <article className="group relative flex min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[630px] flex-col items-center justify-center overflow-hidden rounded-none bg-creole text-center shadow-md transition-shadow duration-500 hover:shadow-xl">
