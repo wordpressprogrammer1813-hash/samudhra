@@ -93,8 +93,9 @@ export default async function HomePage() {
 
   const thaliFigures = Object.values(thali.figureImages).some(Boolean) ? thali.figureImages : undefined;
 
-  const cateringCard1 = catering.card1.image || catering.card1.titleLine1 ? catering.card1 : undefined;
-  const cateringCard2 = catering.card2.image || catering.card2.titleLine1 ? catering.card2 : undefined;
+  const cateringCards = catering.cards.some((c) => c.image || c.titleLine1)
+    ? catering.cards
+    : undefined;
 
   const contactLocations = contact.locations.some((loc) => loc.name) ? contact.locations : undefined;
 
@@ -159,8 +160,7 @@ export default async function HomePage() {
           headingLine2: str(catering.headingLine2),
           headingLine3: str(catering.headingLine3),
           description: str(catering.description),
-          card1: cateringCard1,
-          card2: cateringCard2,
+          cards: cateringCards,
         }}
         contact={{
           eyebrow: str(contact.eyebrow),

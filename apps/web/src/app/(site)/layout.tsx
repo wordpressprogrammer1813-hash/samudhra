@@ -15,33 +15,33 @@ const DEFAULT_NAV_GROUPS: NavGroup[] = [
   {
     label: 'Our Menu',
     links: [
-      { label: 'Food & Drinks', href: '#menu' },
-      { label: 'Weekend Thali', href: '#thali' },
+      { label: 'Food & Drinks', href: '/menu' },
+      { label: 'Weekend Thali', href: '/menu#weekend-thali' },
     ],
   },
   {
     label: 'Dining & Lounge',
     links: [
-      { label: 'Dining Experience', href: '#dining' },
-      { label: 'Photo Gallery', href: '#dining' },
+      { label: 'Dining Experience', href: '/dining' },
+      { label: 'Photo Gallery', href: '/dining#gallery' },
     ],
   },
   {
     label: 'Catering & Events',
     links: [
-      { label: 'Catering Menu', href: '#catering' },
-      { label: 'Event Inquiry', href: '#catering' },
+      { label: 'Catering Menu', href: '/#catering' },
+      { label: 'Event Inquiry', href: '/#catering' },
     ],
   },
   {
     label: 'Our Story',
-    links: [{ label: 'About Samudhra', href: '#story' }],
+    links: [{ label: 'About Samudhra', href: '/#story' }],
   },
   {
     label: 'Contact',
     links: [
-      { label: 'Location & Hours', href: '#contact' },
-      { label: 'Contact Details', href: '#contact' },
+      { label: 'Location & Hours', href: '/contact' },
+      { label: 'Contact Details', href: '/contact' },
     ],
   },
 ];
@@ -50,33 +50,33 @@ const DEFAULT_FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: 'Our Menu',
     links: [
-      { label: 'Food & Drinks', href: '#menu' },
-      { label: 'Weekend Thali', href: '#thali' },
+      { label: 'Food & Drinks', href: '/menu' },
+      { label: 'Weekend Thali', href: '/menu#weekend-thali' },
     ],
   },
   {
     heading: 'Dining & Lounge',
     links: [
-      { label: 'Dining Experience', href: '#dining' },
-      { label: 'Photo Gallery', href: '#dining' },
+      { label: 'Dining Experience', href: '/dining' },
+      { label: 'Photo Gallery', href: '/dining#gallery' },
     ],
   },
   {
     heading: 'Catering & Events',
     links: [
-      { label: 'Catering Menu', href: '#catering' },
-      { label: 'Event Inquiry', href: '#catering' },
+      { label: 'Catering Menu', href: '/#catering' },
+      { label: 'Event Inquiry', href: '/#catering' },
     ],
   },
   {
     heading: 'Our Story',
-    links: [{ label: 'About Samudhra', href: '#story' }],
+    links: [{ label: 'About Samudhra', href: '/#story' }],
   },
   {
     heading: 'Contact',
     links: [
-      { label: 'Location & Hours', href: '#contact' },
-      { label: 'Contact Details', href: '#contact' },
+      { label: 'Location & Hours', href: '/contact' },
+      { label: 'Contact Details', href: '/contact' },
     ],
   },
 ];

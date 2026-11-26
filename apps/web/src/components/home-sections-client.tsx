@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ActionModal, type ActionIntent } from '@/components/action-modal';
 import { CateringEvents, type CateringEventsProps } from '@/components/catering-events';
 import { ContactSection, type ContactSectionProps } from '@/components/contact-section';
@@ -45,6 +46,7 @@ export function HomeSectionsClient({
     socialLinks?: LocationGateSocialLinks;
   };
 }) {
+  const router = useRouter();
   const [isGateOpen, setIsGateOpen] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState(
     () => locationGate?.cards?.[0]?.name ?? '',
@@ -92,12 +94,16 @@ export function HomeSectionsClient({
 
   function handleNavigate(href: string) {
     setIsGateOpen(false);
-    if (typeof window !== 'undefined' && href.startsWith('#')) {
+    if (href.startsWith('#')) {
       const id = href.slice(1);
       const target = id ? document.getElementById(id) : null;
       if (target) {
         target.scrollIntoView({ behavior: 'smooth' });
       }
+      return;
+    }
+    if (href.startsWith('/')) {
+      router.push(href);
     }
   }
 

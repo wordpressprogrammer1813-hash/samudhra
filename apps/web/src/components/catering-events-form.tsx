@@ -31,8 +31,28 @@ export function CateringEventsForm({
     setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
-  function setCard(card: 'card1' | 'card2', patch: Partial<CateringCardContent>) {
-    setDraft((prev) => ({ ...prev, [card]: { ...prev[card], ...patch } }));
+  function setCard(index: number, patch: Partial<CateringCardContent>) {
+    setDraft((prev) => {
+      const cards = prev.cards.map((c, i) => (i === index ? { ...c, ...patch } : c));
+      return { ...prev, cards };
+    });
+  }
+
+  function addCard() {
+    setDraft((prev) => ({
+      ...prev,
+      cards: [
+        ...prev.cards,
+        { image: '', titleLine1: '', titleLine2: '', subtitle: '', ctaLabel: '', href: '' },
+      ],
+    }));
+  }
+
+  function removeCard(index: number) {
+    setDraft((prev) => ({
+      ...prev,
+      cards: prev.cards.filter((_, i) => i !== index),
+    }));
   }
 
   function handleSave() {
@@ -40,63 +60,6 @@ export function CateringEventsForm({
       await updateSectionContent(sectionId, pageId, { ...draft });
       setSaved(draft);
     });
-  }
-
-  function renderCard(key: 'card1' | 'card2', label: string) {
-    const card = draft[key];
-    return (
-      <div className="rounded-[3px] border border-heath/15 p-4">
-        <span className="mb-3 block text-xs font-medium tracking-[0.2em] text-heath/50 uppercase">
-          {label}
-        </span>
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <MediaPicker
-            value={card.image.startsWith('http') ? card.image : null}
-            media={media}
-            onChange={(v) => setCard(key, { image: v })}
-          />
-          <div className="flex flex-1 flex-col gap-3">
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <CustomizeTextField
-                  label="Title — line 1"
-                  value={card.titleLine1}
-                  onChange={(v) => setCard(key, { titleLine1: v })}
-                />
-              </div>
-              <div className="flex-1">
-                <CustomizeTextField
-                  label="Title — line 2"
-                  value={card.titleLine2}
-                  onChange={(v) => setCard(key, { titleLine2: v })}
-                />
-              </div>
-            </div>
-            <CustomizeTextField
-              label="Subtitle"
-              value={card.subtitle}
-              onChange={(v) => setCard(key, { subtitle: v })}
-            />
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <CustomizeTextField
-                  label="Link label"
-                  value={card.ctaLabel}
-                  onChange={(v) => setCard(key, { ctaLabel: v })}
-                />
-              </div>
-              <div className="flex-1">
-                <CustomizeTextField
-                  label="Link"
-                  value={card.href}
-                  onChange={(v) => setCard(key, { href: v })}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -138,9 +101,86 @@ export function CateringEventsForm({
         />
       </div>
 
-      <div className="mt-8 flex flex-col gap-5">
-        {renderCard('card1', 'Card 1')}
-        {renderCard('card2', 'Card 2')}
+      <div className="mt-8">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs font-medium tracking-[0.2em] text-heath/60 uppercase">
+            Cards ({draft.cards.length})
+          </span>
+          <button
+            type="button"
+            onClick={addCard}
+            className="rounded-full border border-heath/30 px-4 py-1.5 text-[11px] font-medium tracking-[0.16em] text-heath uppercase transition-colors hover:bg-heath hover:text-serenade"
+          >
+            + Add card
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          {draft.cards.map((card, index) => (
+            <div key={index} className="rounded-[3px] border border-heath/15 p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-medium tracking-[0.2em] text-heath/50 uppercase">
+                  Card {index + 1}
+                </span>
+                {draft.cards.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeCard(index)}
+                    className="text-xs font-medium tracking-[0.12em] text-korma uppercase hover:text-heath"
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <MediaPicker
+                  value={card.image.startsWith('http') ? card.image : null}
+                  media={media}
+                  onChange={(v) => setCard(index, { image: v })}
+                />
+                <div className="flex flex-1 flex-col gap-3">
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <CustomizeTextField
+                        label="Title — line 1"
+                        value={card.titleLine1}
+                        onChange={(v) => setCard(index, { titleLine1: v })}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <CustomizeTextField
+                        label="Title — line 2"
+                        value={card.titleLine2}
+                        onChange={(v) => setCard(index, { titleLine2: v })}
+                      />
+                    </div>
+                  </div>
+                  <CustomizeTextField
+                    label="Subtitle"
+                    value={card.subtitle}
+                    onChange={(v) => setCard(index, { subtitle: v })}
+                  />
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <CustomizeTextField
+                        label="Link label"
+                        value={card.ctaLabel}
+                        onChange={(v) => setCard(index, { ctaLabel: v })}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <CustomizeTextField
+                        label="Link"
+                        value={card.href}
+                        onChange={(v) => setCard(index, { href: v })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div

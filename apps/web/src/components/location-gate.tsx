@@ -34,12 +34,12 @@ export interface LocationGateNavLink {
 }
 
 const DEFAULT_NAV_LINKS: LocationGateNavLink[] = [
-  { label: 'MENU', href: '#menu' },
-  { label: 'DINING EXPERIENCE', href: '#dining' },
-  { label: 'GALLERY', href: '#dining' },
-  { label: 'CATERING & EVENTS', href: '#catering' },
-  { label: 'OUR STORY', href: '#story' },
-  { label: 'LOCATION & HOURS', href: '#contact' },
+  { label: 'MENU', href: '/menu' },
+  { label: 'DINING EXPERIENCE', href: '/dining' },
+  { label: 'GALLERY', href: '/dining#gallery' },
+  { label: 'CATERING & EVENTS', href: '/#catering' },
+  { label: 'OUR STORY', href: '/#story' },
+  { label: 'LOCATION & HOURS', href: '/contact' },
 ];
 
 function CardBackground({ image }: { image: string }) {

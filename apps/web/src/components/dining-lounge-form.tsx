@@ -35,6 +35,20 @@ export function DiningLoungeForm({
     });
   }
 
+  function addRow() {
+    setDraft((prev) => ({
+      ...prev,
+      rows: [...prev.rows, { image: '', description: '', title: '', href: '' }],
+    }));
+  }
+
+  function removeRow(index: number) {
+    setDraft((prev) => ({
+      ...prev,
+      rows: prev.rows.filter((_, i) => i !== index),
+    }));
+  }
+
   function handleSave() {
     startTransition(async () => {
       await updateSectionContent(sectionId, pageId, { ...draft });
@@ -64,15 +78,35 @@ export function DiningLoungeForm({
       </div>
 
       <div className="mt-8">
-        <span className="mb-3 block text-xs font-medium tracking-[0.2em] text-heath/60 uppercase">
-          Rows
-        </span>
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs font-medium tracking-[0.2em] text-heath/60 uppercase">
+            Rows ({draft.rows.length})
+          </span>
+          <button
+            type="button"
+            onClick={addRow}
+            className="rounded-full border border-heath/30 px-4 py-1.5 text-[11px] font-medium tracking-[0.16em] text-heath uppercase transition-colors hover:bg-heath hover:text-serenade"
+          >
+            + Add row
+          </button>
+        </div>
         <div className="flex flex-col gap-5">
           {draft.rows.map((row, index) => (
             <div key={index} className="rounded-[3px] border border-heath/15 p-4">
-              <span className="mb-3 block text-xs font-medium tracking-[0.2em] text-heath/50 uppercase">
-                Row {index + 1}
-              </span>
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-medium tracking-[0.2em] text-heath/50 uppercase">
+                  Row {index + 1}
+                </span>
+                {draft.rows.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeRow(index)}
+                    className="text-xs font-medium tracking-[0.12em] text-korma uppercase hover:text-heath"
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <MediaPicker
                   value={row.image.startsWith('http') ? row.image : null}

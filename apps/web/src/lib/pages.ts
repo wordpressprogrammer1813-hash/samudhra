@@ -155,7 +155,9 @@ export function toDiningLoungeContent(content: Record<string, unknown>): DiningL
     title: String(r.title ?? ''),
     href: String(r.href ?? ''),
   }));
-  while (rows.length < 3) rows.push({ image: '', description: '', title: '', href: '' });
+  if (rows.length === 0) {
+    rows.push({ image: '', description: '', title: '', href: '' });
+  }
 
   return {
     eyebrow: String(content.eyebrow ?? ''),
@@ -202,13 +204,12 @@ export interface CateringEventsContent {
   headingLine2: string;
   headingLine3: string;
   description: string;
-  card1: CateringCardContent;
-  card2: CateringCardContent;
+  cards: CateringCardContent[];
 }
 
 function toCateringCard(
   card: Record<string, unknown> | undefined,
-  fallback: Record<string, unknown> | undefined,
+  fallback?: Record<string, unknown> | undefined,
 ): CateringCardContent {
   const c = card ?? {};
   const f = fallback ?? {};
@@ -224,6 +225,18 @@ function toCateringCard(
 
 export function toCateringEventsContent(content: Record<string, unknown>): CateringEventsContent {
   const cardsRaw = Array.isArray(content.cards) ? (content.cards as Record<string, unknown>[]) : [];
+  let cards: CateringCardContent[];
+
+  if (cardsRaw.length > 0) {
+    cards = cardsRaw.map((c) => toCateringCard(c));
+  } else if (content.card1 || content.card2) {
+    cards = [
+      toCateringCard(content.card1 as Record<string, unknown>),
+      toCateringCard(content.card2 as Record<string, unknown>),
+    ];
+  } else {
+    cards = [toCateringCard(undefined), toCateringCard(undefined)];
+  }
 
   return {
     eyebrow: String(content.eyebrow ?? ''),
@@ -231,8 +244,7 @@ export function toCateringEventsContent(content: Record<string, unknown>): Cater
     headingLine2: String(content.headingLine2 ?? 'Table to'),
     headingLine3: String(content.headingLine3 ?? 'You'),
     description: String(content.description ?? content.body ?? ''),
-    card1: toCateringCard(content.card1 as Record<string, unknown>, cardsRaw[0]),
-    card2: toCateringCard(content.card2 as Record<string, unknown>, cardsRaw[1]),
+    cards,
   };
 }
 
@@ -301,7 +313,7 @@ export async function listPages(): Promise<PageSummary[]> {
   const [{ data: pages, error: pagesError }, { data: sections, error: sectionsError }] =
     await Promise.all([
       db.from('pages').select('id, slug, title, is_published').order('position'),
-      db.from('page_sections').select('page_id'),
+      db.from('page_sections').select('page_id, kind, key'),
     ]);
 
   if (pagesError) throw pagesError;
@@ -309,6 +321,9 @@ export async function listPages(): Promise<PageSummary[]> {
 
   const counts = new Map<string, number>();
   for (const row of sections ?? []) {
+    if (row.kind === 'header' || row.kind === 'footer' || row.key === 'header' || row.key === 'footer') {
+      continue;
+    }
     counts.set(row.page_id, (counts.get(row.page_id) ?? 0) + 1);
   }
 
@@ -343,16 +358,24 @@ export async function getPageWithSections(
 
   return {
     ...page,
-    sections: (rows ?? []).map((row) => ({
-      id: row.id,
-      pageId: row.page_id,
-      key: row.key,
-      kind: row.kind,
-      label: row.label,
-      position: row.position,
-      isVisible: row.is_visible,
-      content: row.content as Record<string, unknown>,
-    })),
+    sections: (rows ?? [])
+      .filter(
+        (row) =>
+          row.kind !== 'header' &&
+          row.kind !== 'footer' &&
+          row.key !== 'header' &&
+          row.key !== 'footer',
+      )
+      .map((row) => ({
+        id: row.id,
+        pageId: row.page_id,
+        key: row.key,
+        kind: row.kind,
+        label: row.label,
+        position: row.position,
+        isVisible: row.is_visible,
+        content: row.content as Record<string, unknown>,
+      })),
   };
 }
 
