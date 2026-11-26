@@ -52,6 +52,8 @@ export function SiteFooter({
             <span>© {new Date().getFullYear()} Samudhra</span>
             <span>Prototype — [bracketed] details are placeholders</span>
           </p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/footer-mark.png" alt="" aria-hidden="true" className="h-7 w-auto shrink-0" />
         </div>
       </div>
     </footer>

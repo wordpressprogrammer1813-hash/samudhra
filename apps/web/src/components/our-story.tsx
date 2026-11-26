@@ -86,6 +86,9 @@ export function OurStory({
               {quote}
             </p>
 
+            {/* Divider */}
+            <div className="h-px w-16 bg-heath/35" aria-hidden="true" />
+
             {/* Narrative Body Copy */}
             <p className="max-w-[490px] text-[14px] xl:text-[15px] leading-[1.7] font-normal text-heath/85">
               {body}
