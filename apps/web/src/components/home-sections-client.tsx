@@ -75,6 +75,12 @@ export function HomeSectionsClient({
     return () => unlockBodyScroll();
   }, [isGateOpen]);
 
+  useEffect(() => {
+    if (!isGateOpen) {
+      window.dispatchEvent(new CustomEvent('samudhra:gate-closed'));
+    }
+  }, [isGateOpen]);
+
   function handleSelectLocation(location: string, index = 0) {
     setSelectedLocation(location);
     setSelectedIndex(index);

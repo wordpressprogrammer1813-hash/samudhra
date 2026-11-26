@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { DIAMOND_PATTERN_URL } from '@/lib/constants';
 import type { HeroAction } from '@/lib/pages';
 
@@ -22,10 +22,17 @@ export function HeroSection({
   const heroRef = useRef<HTMLElement>(null);
   const [tracking, setTracking] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [gateClosed, setGateClosed] = useState(false);
   const hasPhoto =
     Boolean(backgroundImage) &&
     (backgroundImage.startsWith('http') || backgroundImage.startsWith('/'));
   const visibleActions = actions.filter((a) => a.label);
+
+  useEffect(() => {
+    const handleGateClosed = () => setGateClosed(true);
+    window.addEventListener('samudhra:gate-closed', handleGateClosed);
+    return () => window.removeEventListener('samudhra:gate-closed', handleGateClosed);
+  }, []);
 
   function onMouseMove(e: React.MouseEvent<HTMLElement>) {
     const rect = heroRef.current?.getBoundingClientRect();
@@ -55,10 +62,13 @@ export function HeroSection({
         }}
       />
 
-      {/* One-time diagonal left-to-right sweep reveal on load. */}
+      {/* One-time diagonal left-to-right sweep reveal, held until the
+          location gate closes so it isn't wasted underneath that overlay. */}
       <div
         aria-hidden
-        className="animate-sweep pointer-events-none absolute inset-0 bg-[length:1100px] mix-blend-screen motion-reduce:animate-none sm:bg-[length:1920px]"
+        className={`pointer-events-none absolute inset-0 bg-[length:1100px] mix-blend-screen motion-reduce:animate-none sm:bg-[length:1920px] ${
+          gateClosed ? 'animate-sweep' : ''
+        }`}
         style={
           {
             backgroundImage: `url(${DIAMOND_PATTERN_URL})`,
@@ -69,13 +79,14 @@ export function HeroSection({
             maskSize: '300% 100%',
             WebkitMaskRepeat: 'no-repeat',
             maskRepeat: 'no-repeat',
+            opacity: gateClosed ? undefined : 0,
           } as CSSProperties
         }
       />
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[length:1100px] sm:bg-[length:1920px]"
+        className="pointer-events-none absolute inset-0 bg-[length:1100px] mix-blend-screen sm:bg-[length:1920px]"
         style={
           {
             backgroundImage: `url(${DIAMOND_PATTERN_URL})`,
